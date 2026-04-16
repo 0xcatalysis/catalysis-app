@@ -4,7 +4,6 @@ import {
   Github, 
   Twitter, 
   Sparkles, 
-  ShieldCheck,
   Menu,
   X,
 } from 'lucide-react';
@@ -20,7 +19,7 @@ const MOCK_VAULTS = [
     id: 1,
     name: "Gauntlet WETH Prime",
     description: "This is a covered version of the Gauntlet WETH Prime v1 vault on Morpho. The Gauntlet WETH Prime vault aims to optimize for risk-adjusted yield across liquid staking recursive yield markets.",
-    icon: publicUrl('gauntlet-logomark.svg'),
+    icon: publicUrl('gauntlet-logo-full-dark.svg'),
     badges: [
       { text: "Credora A", color: "bg-blue-50 text-blue-600" },
       { text: "15% Protection", color: "bg-[#1E1B4B] text-white" }
@@ -39,12 +38,12 @@ const MOCK_VAULTS = [
   {
     id: 2,
     name: "KPK ETH Prime",
-    description: "This is a covered version of the ETH Prime Vault on Morpho. A low-risk ETH vault with 24h automation. Allocations are continuously rebalanced across liquid markets with strict collateral filters in place to preserve liquidity and mitigate risk.",
+    description: "This is a covered version of the ETH Prime Vault on Morpho. The KPK ETH Prime is a low-risk ETH vault with 24h automation. Allocations are continuously rebalanced across liquid markets with strict collateral filters in place to preserve liquidity and mitigate risk.",
     icon: publicUrl('kpk-logo.png'),
     isComingSoon: true,
     badges: [
       { text: "Coming Soon", color: "bg-[#DBEAFE] text-[#1E3A8A]" },
-      { text: "Credora A+", color: "bg-[#F1F5F9] text-[#475569]" },
+      { text: "Credora A", color: "bg-[#F1F5F9] text-[#475569]" },
       { text: "10% Protection", color: "bg-[#1E293B] text-white" }
     ],
     stats: {
@@ -61,11 +60,11 @@ const MOCK_VAULTS = [
     id: 3,
     name: "Gauntlet USDC Prime",
     description: "This is a covered version of the USDC Prime Vault on Morpho. The Gauntlet USDC Prime vault aims to optimize for risk-adjusted yield across large market cap and high liquidity collateral markets.",
-    icon: publicUrl('gauntlet-logomark.svg'),
+    icon: publicUrl('gauntlet-logo-full-dark.svg'),
     isComingSoon: true,
     badges: [
       { text: "Coming Soon", color: "bg-[#DBEAFE] text-[#1E3A8A]" },
-      { text: "Credora A+", color: "bg-[#F1F5F9] text-[#475569]" },
+      { text: "Credora A", color: "bg-[#F1F5F9] text-[#475569]" },
       { text: "10% Protection", color: "bg-[#1E293B] text-white" }
     ],
     stats: {
@@ -82,10 +81,12 @@ const MOCK_VAULTS = [
     id: 4,
     name: "Steakhouse Prime Instant V2",
     description: "This is a covered version of the Steakhouse Prime Instant v2 vault on Morpho. The Steakhouse ETH vault aims to optimize yields by lending ETH against blue chip crypto and real world asset (RWA) collateral markets, depending on market conditions.",
-    icon: "https://api.dicebear.com/7.x/identicon/svg?seed=steakhouse&backgroundColor=15803d",
+    icon: publicUrl('steakhouse-logo.svg'),
+    isComingSoon: true,
     badges: [
-      { text: "Credora A", color: "bg-blue-50 text-blue-600" },
-      { text: "10% Protection", color: "bg-[#1E1B4B] text-white" }
+      { text: "Coming Soon", color: "bg-[#DBEAFE] text-[#1E3A8A]" },
+      { text: "Credora A", color: "bg-[#F1F5F9] text-[#475569]" },
+      { text: "10% Protection", color: "bg-[#1E293B] text-white" }
     ],
     stats: {
       tvlCap: "$0M",
@@ -100,8 +101,9 @@ const MOCK_VAULTS = [
 ];
 
 const COMING_SOON_DATA = [
-  { id: 'nest', name: 'Nest Credit Vaults' },
-  { id: 'upshift', name: 'Upshift Credit Vaults' }
+  { id: 'nest', name: 'Nest Credit Vaults', href: 'https://nest.credit/' },
+  { id: 'upshift', name: 'Upshift Vaults', href: 'https://www.upshift.finance/' },
+  { id: 'midas', name: 'Midas Vaults', href: 'https://midas.app/' },
 ];
 
 /**
@@ -126,6 +128,15 @@ const NestLogo = ({ className }) => (
       </clipPath>
     </defs>
   </svg>
+);
+
+const MidasLogo = ({ className }) => (
+  <img
+    src={publicUrl('midas-full-logo-primary.svg')}
+    alt=""
+    className={`h-6 w-auto max-h-6 object-contain object-left ${className ?? ''}`}
+    decoding="async"
+  />
 );
 
 const UpshiftLogo = ({ className }) => (
@@ -169,12 +180,12 @@ const VaultCard = ({ vault }) => {
         </div>
       )}
       <div className="flex flex-col gap-4 mb-4">
-        <div className="flex justify-between items-start">
-          <div className="flex items-center gap-3">
+        <div className="flex justify-between items-start gap-3">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <img 
               src={vault.icon} 
-              alt={vault.name} 
-              className={`w-10 h-10 rounded-lg object-cover ${isMuted ? 'grayscale opacity-50' : ''}`} 
+              alt="" 
+              className={`h-10 w-auto max-w-full max-h-10 object-contain object-left shrink-0 ${isMuted ? 'grayscale opacity-50' : ''}`} 
             />
             {/* Desktop: Coming Soon next to icon; mobile: shown at top */}
             {isComingSoon && (
@@ -259,22 +270,50 @@ const Stat = ({ label, value, isPositive, disabled, icon, className = '' }) => (
   </div>
 );
 
-const ComingSoonMiniCard = ({ name, id }) => {
-  return (
-    <div
-      className="bg-white border border-gray-100 rounded-lg p-5 flex flex-col justify-center items-start shadow-sm transition-all group cursor-default"
-      aria-disabled="true"
-    >
+const ComingSoonBrandLogo = ({ id }) => {
+  const cls = 'h-6 w-auto text-gray-900';
+  switch (id) {
+    case 'nest':
+      return <NestLogo className={cls} />;
+    case 'upshift':
+      return <UpshiftLogo className={cls} />;
+    case 'midas':
+      return <MidasLogo />;
+    default:
+      return null;
+  }
+};
+
+const ComingSoonMiniCard = ({ name, id, href }) => {
+  const shellClass =
+    'bg-white border border-gray-100 rounded-lg p-5 flex flex-col justify-center items-start shadow-sm transition-all group';
+  const body = (
+    <>
       <div className="mb-3">
-        {id === 'nest' ? (
-          <NestLogo className="h-6 w-auto text-gray-900" />
-        ) : (
-          <UpshiftLogo className="h-6 w-auto text-gray-900" />
-        )}
+        <ComingSoonBrandLogo id={id} />
       </div>
       <span className="text-sm font-medium font-sans text-gray-600">
         {name}
       </span>
+    </>
+  );
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`${shellClass} cursor-pointer hover:border-gray-200 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500`}
+      >
+        {body}
+      </a>
+    );
+  }
+
+  return (
+    <div className={`${shellClass} cursor-default`} aria-disabled="true">
+      {body}
     </div>
   );
 };
@@ -327,8 +366,9 @@ const Navbar = () => {
 
   const navLinks = (
     <>
-      <a href="#about" className="hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>About</a>
-      <a href="#contact" className="hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>Contact Us</a>
+      <a href="https://catalysis.network/" className="hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>About</a>
+      <a href="https://docs.catalysis.network/" className="hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>Docs</a>
+      <a href="https://catalysis.network/contact-us" className="hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>Contact Us</a>
     </>
   );
 
@@ -371,8 +411,9 @@ const Navbar = () => {
               backdropFilter: 'blur(12px)'
             }}
           >
-            <a href="#about" className="block py-3 px-4 rounded-lg hover:bg-gray-100 hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>About</a>
-            <a href="#contact" className="block py-3 px-4 rounded-lg hover:bg-gray-100 hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>Contact Us</a>
+            <a href="https://catalysis.network/" className="block py-3 px-4 rounded-lg hover:bg-gray-100 hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>About</a>
+            <a href="https://docs.catalysis.network/" className="block py-3 px-4 rounded-lg hover:bg-gray-100 hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>Docs</a>
+            <a href="https://catalysis.network/contact-us" className="block py-3 px-4 rounded-lg hover:bg-gray-100 hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>Contact Us</a>
           </div>
         )}
       </div>
@@ -432,7 +473,7 @@ const Footer = () => (
           <div>
             <h4 className="font-bold text-sm text-gray-900 mb-4 font-sans">Developers</h4>
             <ul className="text-sm text-gray-500 space-y-3 font-sans">
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Documentation</a></li>
+              <li><a href="#" className="hover:text-blue-600 transition-colors">Docs</a></li>
               <li><a href="#" className="hover:text-blue-600 transition-colors">Technical Paper</a></li>
             </ul>
           </div>
@@ -477,8 +518,15 @@ export default function App() {
 
       <main className="container mx-auto max-w-6xl px-6 flex-1 pb-20">
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-[#2563EB] rounded-lg flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-            <ShieldCheck className="w-6 h-6" />
+          <div className="w-10 h-10 rounded-lg overflow-hidden shadow-lg shadow-blue-500/20 shrink-0 ring-1 ring-black/5">
+            <img
+              src={publicUrl('morpho-with-background-logo.svg')}
+              alt="Morpho"
+              width={40}
+              height={40}
+              className="w-full h-full object-cover"
+              decoding="async"
+            />
           </div>
           <h1 className="text-xl font-bold text-[#0F172A] font-sans">Morpho Covered Vaults</h1>
         </div>
@@ -497,8 +545,8 @@ export default function App() {
             </div>
             <section className="mt-16">
               <Skeleton className="h-8 w-40 mb-8" />
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                {[1, 2].map(i => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map((i) => (
                   <ComingSoonMiniCardSkeleton key={i} />
                 ))}
               </div>
@@ -520,9 +568,9 @@ export default function App() {
 
             <section className="mt-16">
                 <h2 className="text-2xl font-bold text-gray-900 mb-8 font-sans">Coming Soon</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                    {COMING_SOON_DATA.map(item => (
-                        <ComingSoonMiniCard key={item.id} name={item.name} id={item.id} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {COMING_SOON_DATA.map((item) => (
+                        <ComingSoonMiniCard key={item.id} name={item.name} id={item.id} href={item.href} />
                     ))}
                 </div>
             </section>
