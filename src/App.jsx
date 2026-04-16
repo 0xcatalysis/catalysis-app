@@ -452,10 +452,10 @@ const Footer = () => (
             <CatalysisNavbarLogo className="h-6 w-auto text-[#383737]" />
           </a>
           <div className="flex gap-3">
-            <a href="#" className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors" aria-label="Twitter">
+            <a href="https://x.com/0xcatalysis" className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors" aria-label="X (Twitter)" rel="noopener noreferrer" target="_blank">
               <Twitter className="w-4 h-4 text-gray-600" />
             </a>
-            <a href="#" className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors" aria-label="GitHub">
+            <a href="https://github.com/0xcatalysis" className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors" aria-label="GitHub" rel="noopener noreferrer" target="_blank">
               <Github className="w-4 h-4 text-gray-600" />
             </a>
           </div>
@@ -466,22 +466,40 @@ const Footer = () => (
           <div>
             <h4 className="font-bold text-sm text-gray-900 mb-4 font-sans">Resources</h4>
             <ul className="text-sm text-gray-500 space-y-3 font-sans">
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Brand</a></li>
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Help & Support</a></li>
+              <li>
+                <a
+                  href="https://glowing-force-2df.notion.site/Catalysis-a68f0b2f34bc82d3905981e37be36063"
+                  className="hover:text-blue-600 transition-colors"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Brand
+                </a>
+              </li>
+              <li><a href="https://catalysis.network/contact-us" className="hover:text-blue-600 transition-colors">Help & Support</a></li>
             </ul>
           </div>
           <div>
             <h4 className="font-bold text-sm text-gray-900 mb-4 font-sans">Developers</h4>
             <ul className="text-sm text-gray-500 space-y-3 font-sans">
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Docs</a></li>
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Technical Paper</a></li>
+              <li><a href="https://docs.catalysis.network/" className="hover:text-blue-600 transition-colors">Docs</a></li>
+              <li>
+                <a
+                  href="https://arxiv.org/abs/2505.03843"
+                  className="hover:text-blue-600 transition-colors"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Technical Paper
+                </a>
+              </li>
             </ul>
           </div>
           <div>
             <h4 className="font-bold text-sm text-gray-900 mb-4 font-sans">Company</h4>
             <ul className="text-sm text-gray-500 space-y-3 font-sans">
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Contact Us</a></li>
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Terms & Conditions</a></li>
+              <li><a href="https://catalysis.network/contact-us" className="hover:text-blue-600 transition-colors">Contact Us</a></li>
+              <li><a href="https://catalysis.network/t-and-c" className="hover:text-blue-600 transition-colors">Terms & Conditions</a></li>
             </ul>
           </div>
         </nav>
