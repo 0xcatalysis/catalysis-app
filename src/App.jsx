@@ -9,51 +9,38 @@ import {
   X,
 } from 'lucide-react';
 
+/** Public files must include Vite `base` (see vite.config.js). */
+const publicUrl = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`;
+
 /**
  * MOCK API DATA
  */
 const MOCK_VAULTS = [
   {
     id: 1,
-    name: "Steakhouse Prime Instant V2",
-    description: "This is a covered version of the Steakhouse Prime Instant v2 vault on Morpho. The Steakhouse ETH vault aims to optimize yields by lending ETH against blue chip crypto and real world asset (RWA) collateral markets, depending on market conditions.",
-    icon: "https://api.dicebear.com/7.x/identicon/svg?seed=steakhouse&backgroundColor=15803d",
+    name: "Gauntlet WETH Prime",
+    description: "This is a covered version of the Gauntlet WETH Prime v1 vault on Morpho. The Gauntlet WETH Prime vault aims to optimize for risk-adjusted yield across liquid staking recursive yield markets.",
+    icon: publicUrl('gauntlet-logomark.svg'),
     badges: [
       { text: "Credora A", color: "bg-blue-50 text-blue-600" },
       { text: "15% Protection", color: "bg-[#1E1B4B] text-white" }
     ],
     stats: {
       tvlCap: "$5M",
-      coveredApy: "1.50%",
-      baseApy: "2.00%",
+      coveredApy: "1.19%",
+      baseApy: "1.47%",
       apyBoost: "+0.75%",
       currentTvl: "$0.01M"
     },
-    status: "active"
+    status: "active",
+    moreInfoUrl: "https://app.morpho.org/ethereum/vault/0x2371e134e3455e0593363cBF89d3b6cf53740618/gauntlet-weth-prime",
+    titleUrl: "https://etherscan.io/address/0x45dc31c63a87193555f48c4b95ca61aa119a9b3e"
   },
   {
     id: 2,
-    name: "Gauntlet WETH Prime",
-    description: "This is a covered version of the Gauntlet WETH Prime v1 vault on Morpho. The Gauntlet WETH Prime vault aims to optimize for risk-adjusted yield across liquid staking recursive yield markets.",
-    icon: "https://api.dicebear.com/7.x/identicon/svg?seed=gauntlet&backgroundColor=4f46e5",
-    badges: [
-      { text: "Credora A", color: "bg-blue-50 text-blue-600" },
-      { text: "15% Protection", color: "bg-[#1E1B4B] text-white" }
-    ],
-    stats: {
-      tvlCap: "$5M",
-      coveredApy: "1.50%",
-      baseApy: "2.00%",
-      apyBoost: "+0.75%",
-      currentTvl: "$0.01M"
-    },
-    status: "active"
-  },
-  {
-    id: 3,
-    name: "Gauntlet USDC Core",
-    description: "This is a covered version of the USDC Core Vault on Morpho. It will list a range of liquid collateral markets and continuously optimize risk-adjusted yield across those markets. This vault targets a higher risk level than Gauntlet's Prime Vaults.",
-    icon: "https://api.dicebear.com/7.x/identicon/svg?seed=usdc&backgroundColor=cbd5e1",
+    name: "KPK ETH Prime",
+    description: "This is a covered version of the ETH Prime Vault on Morpho. A low-risk ETH vault with 24h automation. Allocations are continuously rebalanced across liquid markets with strict collateral filters in place to preserve liquidity and mitigate risk.",
+    icon: publicUrl('kpk-logo.png'),
     isComingSoon: true,
     badges: [
       { text: "Coming Soon", color: "bg-[#DBEAFE] text-[#1E3A8A]" },
@@ -61,13 +48,54 @@ const MOCK_VAULTS = [
       { text: "10% Protection", color: "bg-[#1E293B] text-white" }
     ],
     stats: {
-      tvlCap: "$5M",
-      coveredApy: "3.85%",
-      baseApy: "4.35%",
-      apyBoost: "+0.75%",
-      currentTvl: "1.78%"
+      tvlCap: "$0M",
+      coveredApy: "0.00%",
+      baseApy: "0.0%",
+      apyBoost: "0.0%",
+      currentTvl: "$0.00M"
     },
-    status: "active"
+    status: "inactive",
+    moreInfoUrl: "https://app.morpho.org/ethereum/vault/0xd564F765F9aD3E7d2d6cA782100795a885e8e7C8/kpk-eth-prime"
+  },
+  {
+    id: 3,
+    name: "Gauntlet USDC Prime",
+    description: "This is a covered version of the USDC Prime Vault on Morpho. The Gauntlet USDC Prime vault aims to optimize for risk-adjusted yield across large market cap and high liquidity collateral markets.",
+    icon: publicUrl('gauntlet-logomark.svg'),
+    isComingSoon: true,
+    badges: [
+      { text: "Coming Soon", color: "bg-[#DBEAFE] text-[#1E3A8A]" },
+      { text: "Credora A+", color: "bg-[#F1F5F9] text-[#475569]" },
+      { text: "10% Protection", color: "bg-[#1E293B] text-white" }
+    ],
+    stats: {
+      tvlCap: "$0M",
+      coveredApy: "0.00%",
+      baseApy: "0.0%",
+      apyBoost: "0.0%",
+      currentTvl: "$0.00M"
+    },
+    status: "inactive",
+    moreInfoUrl: "https://app.morpho.org/ethereum/vault/0xdd0f28e19C1780eb6396170735D45153D261490d/gauntlet-usdc-prime"
+  },
+  {
+    id: 4,
+    name: "Steakhouse Prime Instant V2",
+    description: "This is a covered version of the Steakhouse Prime Instant v2 vault on Morpho. The Steakhouse ETH vault aims to optimize yields by lending ETH against blue chip crypto and real world asset (RWA) collateral markets, depending on market conditions.",
+    icon: "https://api.dicebear.com/7.x/identicon/svg?seed=steakhouse&backgroundColor=15803d",
+    badges: [
+      { text: "Credora A", color: "bg-blue-50 text-blue-600" },
+      { text: "10% Protection", color: "bg-[#1E1B4B] text-white" }
+    ],
+    stats: {
+      tvlCap: "$0M",
+      coveredApy: "0.00%",
+      baseApy: "0.0%",
+      apyBoost: "0.0%",
+      currentTvl: "$0.00M"
+    },
+    status: "inactive",
+    moreInfoUrl: "https://app.morpho.org/ethereum/vault/0xbeef0046fcab1dE47E41fB75BB3dC4Dfc94108E3/steakhouse-prime-instant"
   }
 ];
 
@@ -127,12 +155,13 @@ const Badge = ({ children, className }) => (
 );
 
 const VaultCard = ({ vault }) => {
-  const isDisabled = vault.isComingSoon;
-  
+  const isComingSoon = Boolean(vault.isComingSoon);
+  const isMuted = isComingSoon || vault.status === 'inactive';
+
   return (
-    <div className={`h-full flex flex-col bg-white border border-gray-100 rounded-xl p-6 shadow-sm transition-all ${isDisabled ? 'opacity-80' : 'hover:shadow-md'}`}>
+    <div className={`h-full flex flex-col bg-white border border-gray-100 rounded-xl p-6 shadow-sm transition-all ${isMuted ? 'opacity-80' : 'hover:shadow-md'}`}>
       {/* Mobile: Coming Soon pill above all content */}
-      {isDisabled && (
+      {isComingSoon && (
         <div className="sm:hidden mb-3">
           <Badge className={vault.badges[0].color}>
             {vault.badges[0].text}
@@ -145,10 +174,10 @@ const VaultCard = ({ vault }) => {
             <img 
               src={vault.icon} 
               alt={vault.name} 
-              className={`w-10 h-10 rounded-lg object-cover ${isDisabled ? 'grayscale opacity-50' : ''}`} 
+              className={`w-10 h-10 rounded-lg object-cover ${isMuted ? 'grayscale opacity-50' : ''}`} 
             />
             {/* Desktop: Coming Soon next to icon; mobile: shown at top */}
-            {isDisabled && (
+            {isComingSoon && (
               <Badge className={`${vault.badges[0].color} hidden sm:inline-flex`}>
                 {vault.badges[0].text}
               </Badge>
@@ -156,7 +185,7 @@ const VaultCard = ({ vault }) => {
           </div>
           <div className="flex gap-1.5">
             {vault.badges.map((badge, idx) => (
-              (!isDisabled || idx !== 0) && (
+              (!isComingSoon || idx !== 0) && (
                 <Badge key={idx} className={badge.color}>
                   {badge.text}
                 </Badge>
@@ -165,27 +194,52 @@ const VaultCard = ({ vault }) => {
           </div>
         </div>
         
-        <h3 className={`font-bold leading-tight flex items-center gap-1 font-satoshi text-2xl ${isDisabled ? 'text-gray-400' : 'text-gray-900'}`}>
-          {vault.name}
+        <h3 className={`font-bold leading-tight flex items-center gap-1 font-satoshi text-2xl ${isMuted ? 'text-gray-400' : 'text-gray-900'}`}>
+          {vault.titleUrl ? (
+            <a
+              href={vault.titleUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`rounded-sm hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${isMuted ? 'text-inherit hover:text-gray-500' : 'text-inherit hover:text-blue-700'}`}
+              aria-label={`${vault.name} on Etherscan (opens in a new tab)`}
+            >
+              {vault.name}
+            </a>
+          ) : (
+            vault.name
+          )}
         </h3>
       </div>
 
-      <p className={`flex-1 text-sm mb-6 leading-relaxed font-sans min-h-0 ${isDisabled ? 'text-gray-400' : 'text-gray-500'}`}>
-        {vault.description} <ExternalLink className={`inline-block w-3 h-3 ml-1 cursor-pointer ${isDisabled ? 'text-gray-300' : 'text-gray-400'}`} />
+      <p className={`flex-1 text-sm mb-6 leading-relaxed font-sans min-h-0 ${isMuted ? 'text-gray-400' : 'text-gray-500'}`}>
+        {vault.description}{' '}
+        {vault.moreInfoUrl ? (
+          <a
+            href={vault.moreInfoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`inline-flex align-baseline ml-0.5 ${isMuted ? 'text-gray-300 hover:text-gray-400' : 'text-gray-400 hover:text-blue-600'} transition-colors`}
+            aria-label={`View ${vault.name} on Morpho (opens in a new tab)`}
+          >
+            <ExternalLink className="inline-block w-3 h-3" />
+          </a>
+        ) : (
+          <ExternalLink className={`inline-block w-3 h-3 ml-1 ${isMuted ? 'text-gray-300' : 'text-gray-400'}`} aria-hidden />
+        )}
       </p>
 
       <div className="grid grid-cols-2 gap-3 border-t border-gray-50 pt-6 shrink-0 lg:flex lg:items-end lg:justify-between lg:gap-8">
-        <Stat label="TVL Cap" value={vault.stats.tvlCap} disabled={isDisabled} />
-        <Stat label="Covered Vault APY" value={vault.stats.coveredApy} disabled={isDisabled} />
-        <Stat label="Base Vault APY (Morpho)" value={vault.stats.baseApy} disabled={isDisabled} />
+        <Stat label="TVL Cap" value={vault.stats.tvlCap} disabled={isMuted} />
+        <Stat label="Covered Vault APY" value={vault.stats.coveredApy} disabled={isMuted} />
+        <Stat label="Base Vault APY (Morpho)" value={vault.stats.baseApy} disabled={isMuted} />
         <Stat 
           label="APY Boost" 
           value={vault.stats.apyBoost} 
-          isPositive={!isDisabled}
-          disabled={isDisabled}
-          icon={<Sparkles className={`w-4 h-4 ${isDisabled ? 'text-gray-300' : 'text-green-500'}`} />} 
+          isPositive={!isMuted}
+          disabled={isMuted}
+          icon={<Sparkles className={`w-4 h-4 ${isMuted ? 'text-gray-300' : 'text-green-500'}`} />} 
         />
-        <Stat label="Current TVL" value={vault.stats.currentTvl} disabled={isDisabled} className="col-span-2 sm:col-span-1" />
+        <Stat label="Current TVL" value={vault.stats.currentTvl} disabled={isMuted} className="col-span-2 sm:col-span-1" />
       </div>
     </div>
   );
@@ -413,6 +467,10 @@ export default function App() {
     fetchData();
   }, []);
 
+  const sortedVaults = [...vaults].sort((a, b) => a.id - b.id);
+  const vaultsFirstRow = sortedVaults.slice(0, 2);
+  const vaultsSecondRow = sortedVaults.slice(2, 4);
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans text-gray-900 flex flex-col">
       <Navbar />
@@ -433,7 +491,9 @@ export default function App() {
               ))}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-24">
-              <VaultCardSkeleton />
+              {[1, 2].map((i) => (
+                <VaultCardSkeleton key={`row2-${i}`} />
+              ))}
             </div>
             <section className="mt-16">
               <Skeleton className="h-8 w-40 mb-8" />
@@ -447,13 +507,13 @@ export default function App() {
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
-              {vaults.filter(v => !v.isComingSoon).map(vault => (
+              {vaultsFirstRow.map((vault) => (
                 <VaultCard key={vault.id} vault={vault} />
               ))}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-24">
-              {vaults.filter(v => v.isComingSoon).map(vault => (
+              {vaultsSecondRow.map((vault) => (
                 <VaultCard key={vault.id} vault={vault} />
               ))}
             </div>
