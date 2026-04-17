@@ -184,18 +184,14 @@ const VaultCardV2Badge = ({ children, className = '' }) => (
 
 /** Default vault card UI — network top-right, badges under logo */
 
-const VaultCardV3StatItem = ({ label, value, icon, isPositive, disabled, compact = false, panelLarge = false }) => (
+const VaultCardV3StatItem = ({ label, value, icon, isPositive, disabled }) => (
   <div className={`flex h-full min-w-0 flex-col ${disabled ? 'opacity-40' : ''}`}>
-    <span
-      className={`mb-1 font-sans font-medium tracking-wider text-gray-400 uppercase ${panelLarge ? 'text-[10px] sm:text-[11px]' : compact ? 'text-[10px]' : 'text-[10px]'}`}
-    >
+    <span className="mb-1 text-[10px] font-sans font-medium tracking-wider text-gray-400 uppercase">
       {label}
     </span>
     <div className="mt-auto flex min-h-[1.375rem] min-w-0 items-end gap-1.5 pt-0.5">
       <span
-        className={`truncate font-satoshi font-bold tabular-nums tracking-tight ${
-          panelLarge ? 'text-xl sm:text-2xl' : compact ? 'text-lg' : 'text-xl'
-        } ${isPositive ? 'text-blue-600' : 'text-[#041c64]'}`}
+        className={`truncate font-satoshi text-xl font-bold tabular-nums tracking-tight ${isPositive ? 'text-blue-600' : 'text-[#041c64]'}`}
       >
         {value}
       </span>
@@ -204,18 +200,16 @@ const VaultCardV3StatItem = ({ label, value, icon, isPositive, disabled, compact
   </div>
 );
 
-const VaultCardV3 = ({ vault, appearStagger = 0, gridClassName = '' }) => {
+const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
   const isComingSoon = Boolean(vault.isComingSoon);
   const isMuted = isComingSoon || vault.status === 'inactive';
   const otherBadges = vault.badges.filter(
     (b) => !b.text.toLowerCase().includes('coming soon')
   );
-  const isBentoWide = gridClassName.includes('md:col-span-7');
-  const isNarrowBento = gridClassName.includes('md:col-span-5');
 
   return (
     <div
-      className={`group catalysis-card-shell catalysis-card-enter relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white transition-shadow duration-300 ${isMuted ? 'opacity-80' : 'hover:shadow-md hover:border-gray-200/90 hover:ring-1 hover:ring-blue-100/70'} ${gridClassName}`.trim()}
+      className={`group catalysis-card-shell catalysis-card-enter relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white transition-shadow duration-300 ${isMuted ? 'opacity-80' : 'hover:shadow-md hover:border-gray-200/90 hover:ring-1 hover:ring-blue-100/70'}`.trim()}
       style={{
         '--card-stagger': appearStagger,
         boxShadow: '0 4px 20px -4px rgba(0,0,0,0.05)',
@@ -225,13 +219,11 @@ const VaultCardV3 = ({ vault, appearStagger = 0, gridClassName = '' }) => {
         <div className="mb-5 space-y-3 sm:mb-6">
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 flex-1 items-center sm:gap-3">
-              <div
-                className={`w-fit shrink-0 rounded-lg border border-gray-100 bg-gray-50 transition-colors duration-300 group-hover:border-blue-100 ${isNarrowBento ? 'p-2' : 'p-2.5'}`}
-              >
+              <div className="w-fit shrink-0 rounded-lg border border-gray-100 bg-gray-50 p-2.5 transition-colors duration-300 group-hover:border-blue-100">
                 <img
                   src={vault.icon}
                   alt=""
-                  className={`w-auto object-contain object-left ${isNarrowBento ? 'h-8 max-w-[160px]' : 'h-9 max-w-[200px]'} ${isMuted ? 'grayscale opacity-40' : ''}`}
+                  className={`h-9 max-w-[200px] w-auto object-contain object-left ${isMuted ? 'grayscale opacity-40' : ''}`}
                 />
               </div>
             </div>
@@ -269,9 +261,7 @@ const VaultCardV3 = ({ vault, appearStagger = 0, gridClassName = '' }) => {
                   {otherBadges.map((badge, idx) => {
                     const isComingSoonPill = badge.text.toLowerCase().includes('coming soon');
                     const nonPrimaryMuted = isMuted && !isComingSoonPill ? 'opacity-40' : '';
-                    const pillSize = isNarrowBento
-                      ? 'px-2 py-px text-[9px] tracking-wide'
-                      : 'px-2.5 py-0.5 text-[9px] tracking-wide sm:text-[10px]';
+                    const pillSize = 'px-2.5 py-0.5 text-[9px] tracking-wide sm:text-[10px]';
                     return (
                       <VaultCardV2Badge
                         key={idx}
@@ -324,82 +314,31 @@ const VaultCardV3 = ({ vault, appearStagger = 0, gridClassName = '' }) => {
             </p>
           </div>
 
-          {isBentoWide ? (
-            <div className="flex min-w-0 w-full flex-col gap-3">
-              <div className={`flex w-full min-w-0 flex-col justify-center ${isMuted ? 'opacity-40' : ''}`}>
-                <span className="mb-1 text-[10px] font-sans font-medium tracking-wider text-gray-400 uppercase">
-                  Net coverage yield
-                </span>
-                <div className="flex items-baseline gap-1">
-                  <span className="font-satoshi text-4xl font-bold tracking-tight text-[#041c64]">
-                    {coveredApyFromStats(vault.stats)}
-                  </span>
-                  <span className="text-sm font-bold text-blue-500">APY</span>
-                </div>
-              </div>
-
-              <div className="grid min-w-0 w-full grid-cols-2 gap-3 rounded-xl border border-gray-100 bg-gray-50/40 p-3 sm:gap-4 sm:p-4">
-                <VaultCardV3StatItem
-                  compact
-                  panelLarge
-                  label="TVL cap"
-                  value={vault.stats.tvlCap}
-                  disabled={isMuted}
-                />
-                <VaultCardV3StatItem
-                  compact
-                  panelLarge
-                  label="Current TVL"
-                  value={vault.stats.currentTvl}
-                  disabled={isMuted}
-                />
-              </div>
-            </div>
-          ) : (
-            <div className={`mt-auto flex w-full max-w-md flex-col justify-center ${isMuted ? 'opacity-40' : ''}`}>
-              <span className="mb-1 text-[10px] font-sans font-medium tracking-wider text-gray-400 uppercase">
-                Net coverage yield
+          <div className={`mt-auto flex w-full max-w-md flex-col justify-center ${isMuted ? 'opacity-40' : ''}`}>
+            <span className="mb-1 text-[10px] font-sans font-medium tracking-wider text-gray-400 uppercase">
+              Net coverage yield
+            </span>
+            <div className="flex items-baseline gap-1">
+              <span className="font-satoshi text-4xl font-bold tracking-tight text-[#041c64]">
+                {coveredApyFromStats(vault.stats)}
               </span>
-              <div className="flex items-baseline gap-1">
-                <span className="font-satoshi text-4xl font-bold tracking-tight text-[#041c64]">
-                  {coveredApyFromStats(vault.stats)}
-                </span>
-                <span className="text-sm font-bold text-blue-500">APY</span>
-              </div>
+              <span className="text-sm font-bold text-blue-500">APY</span>
             </div>
-          )}
+          </div>
         </div>
 
-        <div
-          className={`mt-auto w-full min-w-0 ${isBentoWide ? 'pt-3' : 'border-t border-gray-50 pt-5 sm:pt-6'}`}
-        >
-          {isBentoWide ? (
-            <div
-              className={`grid grid-cols-2 gap-3 rounded-xl border border-gray-100 bg-gray-50/40 p-3 sm:gap-4 sm:p-4 ${isMuted ? 'opacity-40' : ''}`}
-            >
-              <VaultCardV3StatItem
-                compact
-                panelLarge
-                label="Boost"
-                value={vault.stats.apyBoost}
-                isPositive={!isMuted}
-                disabled={false}
-              />
-              <VaultCardV3StatItem compact panelLarge label="Base APY" value={vault.stats.baseApy} disabled={false} />
-            </div>
-          ) : (
-            <div className="grid min-w-0 auto-rows-fr grid-cols-2 items-stretch gap-x-4 gap-y-5 md:grid-cols-4">
-              <VaultCardV3StatItem label="TVL cap" value={vault.stats.tvlCap} disabled={isMuted} />
-              <VaultCardV3StatItem label="Current TVL" value={vault.stats.currentTvl} disabled={isMuted} />
-              <VaultCardV3StatItem
-                label="Boost"
-                value={vault.stats.apyBoost}
-                isPositive={!isMuted}
-                disabled={isMuted}
-              />
-              <VaultCardV3StatItem label="Base APY" value={vault.stats.baseApy} disabled={isMuted} />
-            </div>
-          )}
+        <div className="mt-auto w-full min-w-0 border-t border-gray-50 pt-5 sm:pt-6">
+          <div className="grid min-w-0 auto-rows-fr grid-cols-2 items-stretch gap-x-4 gap-y-5 md:grid-cols-4">
+            <VaultCardV3StatItem label="TVL cap" value={vault.stats.tvlCap} disabled={isMuted} />
+            <VaultCardV3StatItem label="Current TVL" value={vault.stats.currentTvl} disabled={isMuted} />
+            <VaultCardV3StatItem
+              label="Boost"
+              value={vault.stats.apyBoost}
+              isPositive={!isMuted}
+              disabled={isMuted}
+            />
+            <VaultCardV3StatItem label="Base APY" value={vault.stats.baseApy} disabled={isMuted} />
+          </div>
         </div>
       </div>
 
@@ -462,10 +401,8 @@ const Skeleton = ({ className }) => (
   <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
 );
 
-const VaultCardSkeleton = ({ gridClassName = '' }) => (
-  <div
-    className={`h-full min-w-0 flex flex-col bg-white border border-gray-100 rounded-xl p-6 shadow-sm ${gridClassName}`.trim()}
-  >
+const VaultCardSkeleton = () => (
+  <div className="flex h-full min-w-0 flex-col rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
     <div className="flex flex-col gap-4 mb-4">
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-3">
