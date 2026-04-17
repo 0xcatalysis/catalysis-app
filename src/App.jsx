@@ -9,6 +9,7 @@ import {
   X,
 } from 'lucide-react';
 import coveredVaultTermsHtml from './terms/covered-vault-terms.html?raw';
+import { fetchVaultDetailed, liveStatsFromVaultsFyiDetailed } from './vaultsfyi.js';
 
 /** Public files must include Vite `base` (see vite.config.js). */
 const publicUrl = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`;
@@ -604,22 +605,13 @@ function Home() {
     let intervalId = null;
 
     (async () => {
-      const { createVaultsFyiClient, liveStatsFromVaultsFyiDetailed } = await import('./vaultsfyi.js');
-      const client = createVaultsFyiClient();
-      if (!client || cancelled) return;
-
       async function refresh() {
         const next = await Promise.all(
           MOCK_VAULTS.map(async (template) => {
             const vf = template.vaultsfyi;
             if (!vf) return { ...template };
             try {
-              const data = await client.getVault({
-                path: {
-                  network: vf.network,
-                  vaultAddress: vf.vaultAddress,
-                },
-              });
+              const data = await fetchVaultDetailed(vf.network, vf.vaultAddress);
               return {
                 ...template,
                 stats: {
