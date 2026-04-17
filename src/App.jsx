@@ -456,6 +456,7 @@ const Navbar = () => {
 
   const navLinks = (
     <>
+      <Link to="/terms" className="hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>T&amp;Cs</Link>
       <a href="https://catalysis.network/" className="hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>About</a>
       <a href="https://docs.catalysis.network/" className="hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>Docs</a>
       <a href="https://catalysis.network/contact-us" className="hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>Contact Us</a>
@@ -474,9 +475,13 @@ const Navbar = () => {
           }}
           className="backdrop-blur-md rounded-[999px] px-6 md:px-10 py-4 flex justify-between items-center"
         >
-          <Link to="/" className="flex items-center group cursor-pointer">
+          <a
+            href="https://catalysis.network"
+            className="flex items-center group cursor-pointer"
+            onClick={() => setMenuOpen(false)}
+          >
             <CatalysisNavbarLogo className="text-[#383737] group-hover:text-blue-600 transition-colors" />
-          </Link>
+          </a>
           {/* Desktop: links */}
           <div className="hidden md:flex items-center gap-10 text-sm font-medium text-gray-600 font-sans">
             {navLinks}
@@ -501,6 +506,7 @@ const Navbar = () => {
               backdropFilter: 'blur(12px)'
             }}
           >
+            <Link to="/terms" className="block py-3 px-4 rounded-lg hover:bg-gray-100 hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>T&amp;Cs</Link>
             <a href="https://catalysis.network/" className="block py-3 px-4 rounded-lg hover:bg-gray-100 hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>About</a>
             <a href="https://docs.catalysis.network/" className="block py-3 px-4 rounded-lg hover:bg-gray-100 hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>Docs</a>
             <a href="https://catalysis.network/contact-us" className="block py-3 px-4 rounded-lg hover:bg-gray-100 hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>Contact Us</a>
