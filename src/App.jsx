@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { 
   ExternalLink, 
   Github, 
@@ -7,6 +8,7 @@ import {
   Menu,
   X,
 } from 'lucide-react';
+import coveredVaultTermsHtml from './terms/covered-vault-terms.html?raw';
 
 /** Public files must include Vite `base` (see vite.config.js). */
 const publicUrl = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`;
@@ -409,9 +411,9 @@ const Navbar = () => {
           }}
           className="backdrop-blur-md rounded-[999px] px-6 md:px-10 py-4 flex justify-between items-center"
         >
-          <a href="/" className="flex items-center group cursor-pointer">
+          <Link to="/" className="flex items-center group cursor-pointer">
             <CatalysisNavbarLogo className="text-[#383737] group-hover:text-blue-600 transition-colors" />
-          </a>
+          </Link>
           {/* Desktop: links */}
           <div className="hidden md:flex items-center gap-10 text-sm font-medium text-gray-600 font-sans">
             {navLinks}
@@ -524,7 +526,11 @@ const Footer = () => (
             <h4 className="font-bold text-sm text-gray-900 mb-4 font-sans">Company</h4>
             <ul className="text-sm text-gray-500 space-y-3 font-sans">
               <li><a href="https://catalysis.network/contact-us" className="hover:text-blue-600 transition-colors">Contact Us</a></li>
-              <li><a href="https://catalysis.network/t-and-c" className="hover:text-blue-600 transition-colors">Terms & Conditions</a></li>
+              <li>
+                <Link to="/terms" className="hover:text-blue-600 transition-colors">
+                  Terms & Conditions
+                </Link>
+              </li>
             </ul>
           </div>
         </nav>
@@ -534,9 +540,34 @@ const Footer = () => (
 );
 
 /**
+ * COVERED VAULT TERMS (in-app)
+ */
+function TermsPage() {
+  return (
+    <div className="min-h-screen bg-[#F8FAFC] font-sans text-gray-900 flex flex-col">
+      <Navbar />
+      <main className="container mx-auto max-w-3xl px-6 flex-1 pb-20 pt-4">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-600 transition-colors mb-8 font-sans"
+        >
+          ← Back to Morpho Covered Vaults
+        </Link>
+        <iframe
+          title="Covered Vault Participation Terms and Conditions"
+          srcDoc={coveredVaultTermsHtml}
+          className="w-full min-h-[calc(100vh-8rem)] rounded-xl border border-gray-200 bg-white shadow-sm"
+        />
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+/**
  * MAIN APPLICATION COMPONENT
  */
-export default function App() {
+function Home() {
   const [vaults, setVaults] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -623,5 +654,16 @@ export default function App() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/terms" element={<TermsPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
