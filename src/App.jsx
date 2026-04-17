@@ -4,7 +4,6 @@ import {
   ExternalLink, 
   Github, 
   Twitter, 
-  Sparkles, 
   Menu,
   X,
 } from 'lucide-react';
@@ -168,134 +167,195 @@ const UpshiftLogo = ({ className }) => (
   </svg>
 );
 
-const Badge = ({ children, className }) => (
-  <span className={`px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide font-sans ${className}`}>
+function vaultBadgeV2ClassName(text) {
+  const t = String(text).toLowerCase();
+  if (t.includes('coming soon')) return 'bg-amber-50 text-amber-700 border-amber-200';
+  if (t.includes('protection')) return 'bg-[#041c64] text-white border-[#041c64]';
+  return 'bg-blue-50 text-blue-700 border-blue-100';
+}
+
+const VaultCardV2Badge = ({ children, className = '' }) => (
+  <span
+    className={`rounded-md border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap ${className}`}
+  >
     {children}
   </span>
 );
 
-const VaultCard = ({ vault }) => {
+/** Default vault card UI — network top-right, badges under logo */
+
+const VaultCardV3StatItem = ({ label, value, icon, isPositive, disabled, className = '' }) => (
+  <div className={`flex h-full min-w-0 flex-col ${disabled ? 'opacity-40' : ''} ${className}`.trim()}>
+    <span className="mb-1 text-[10px] font-sans font-medium tracking-wider text-gray-400 uppercase">
+      {label}
+    </span>
+    <div className="mt-auto flex min-h-[1.375rem] min-w-0 items-end gap-1.5 pt-0.5">
+      <span
+        className={`truncate font-satoshi text-xl font-bold tabular-nums tracking-tight ${isPositive ? 'text-blue-600' : 'text-[#041c64]'}`}
+      >
+        {value}
+      </span>
+      {icon}
+    </div>
+  </div>
+);
+
+const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
   const isComingSoon = Boolean(vault.isComingSoon);
   const isMuted = isComingSoon || vault.status === 'inactive';
+  const otherBadges = vault.badges.filter(
+    (b) => !b.text.toLowerCase().includes('coming soon')
+  );
 
   return (
-    <div className={`h-full flex flex-col bg-white border border-gray-100 rounded-xl p-6 shadow-sm transition-all ${isMuted ? 'opacity-80' : 'hover:shadow-md'}`}>
-      {/* Mobile: Coming Soon pill above all content */}
-      {isComingSoon && (
-        <div className="sm:hidden mb-3">
-          <Badge className={vault.badges[0].color}>
-            {vault.badges[0].text}
-          </Badge>
-        </div>
-      )}
-      <div className="flex flex-col gap-4 mb-4">
-        <div className="flex justify-between items-center gap-3">
-          <div className="flex min-w-0 flex-1 items-center gap-3">
-            <img 
-              src={vault.icon} 
-              alt="" 
-              className={`h-10 w-auto max-h-10 max-w-full shrink-0 object-contain object-left ${isMuted ? 'grayscale opacity-50' : ''}`} 
-            />
-            {/* Desktop: Coming Soon next to icon; mobile: shown at top */}
-            {isComingSoon && (
-              <Badge className={`${vault.badges[0].color} hidden sm:inline-flex`}>
-                {vault.badges[0].text}
-              </Badge>
-            )}
-          </div>
-          <div className="flex shrink-0 items-center justify-end gap-1.5">
-            {vault.badges.map((badge, idx) => (
-              (!isComingSoon || idx !== 0) && (
-                <Badge key={idx} className={badge.color}>
-                  {badge.text}
-                </Badge>
-              )
-            ))}
-          </div>
-        </div>
-        
-        <h3 className={`font-bold leading-tight flex items-center gap-1 font-satoshi text-2xl ${isMuted ? 'text-gray-400' : 'text-gray-900'}`}>
-          {vault.titleUrl ? (
-            <a
-              href={vault.titleUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`rounded-sm hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${isMuted ? 'text-inherit hover:text-gray-500' : 'text-inherit hover:text-blue-700'}`}
-              aria-label={`${vault.name} on Etherscan (opens in a new tab)`}
+    <div
+      className={`group catalysis-card-shell catalysis-card-enter relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white transition-shadow duration-300 ${isMuted ? 'opacity-80' : 'hover:shadow-md hover:border-gray-200/90 hover:ring-1 hover:ring-blue-100/70'}`.trim()}
+      style={{
+        '--card-stagger': appearStagger,
+        boxShadow: '0 4px 20px -4px rgba(0,0,0,0.05)',
+      }}
+    >
+      <div className="relative z-10 flex h-full flex-col p-6 sm:p-7">
+        <div className="mb-5 space-y-3 sm:mb-6">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 flex-1 items-center sm:gap-3">
+              <div className="w-fit shrink-0 rounded-lg border border-gray-100 bg-gray-50 p-2.5 transition-colors duration-300 group-hover:border-blue-100">
+                <img
+                  src={vault.icon}
+                  alt=""
+                  className={`h-9 max-w-[200px] w-auto object-contain object-left ${isMuted ? 'grayscale opacity-40' : ''}`}
+                />
+              </div>
+            </div>
+
+            <div
+              className={`flex shrink-0 flex-col items-end rounded-xl border border-gray-100 bg-gray-50/50 p-2.5 px-3 transition-all duration-300 sm:rounded-2xl sm:p-3 sm:px-4 ${isMuted ? 'opacity-40' : 'group-hover:bg-blue-50/40'}`}
             >
-              {vault.name}
-            </a>
-          ) : (
-            vault.name
+              <img
+                src={publicUrl('eth-logo-landscape-gray.png')}
+                alt="Ethereum"
+                className="block h-5 w-auto max-w-[124px] object-contain object-right"
+              />
+            </div>
+          </div>
+
+          {(isComingSoon || otherBadges.length > 0) && (
+            <div
+              className={`flex w-full min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+                isComingSoon && otherBadges.length > 0
+                  ? 'justify-between'
+                  : isComingSoon
+                    ? 'justify-start'
+                    : 'justify-end'
+              }`}
+            >
+              {isComingSoon && (
+                <VaultCardV2Badge
+                  className={`${vaultBadgeV2ClassName(vault.badges[0].text)} shrink-0 px-2.5 py-0.5 text-[9px] font-sans font-semibold tracking-wide normal-case sm:text-[10px]`}
+                >
+                  {vault.badges[0].text}
+                </VaultCardV2Badge>
+              )}
+              {otherBadges.length > 0 && (
+                <div className="flex min-w-0 flex-wrap items-center justify-end gap-1.5 sm:gap-2">
+                  {otherBadges.map((badge, idx) => {
+                    const isComingSoonPill = badge.text.toLowerCase().includes('coming soon');
+                    const nonPrimaryMuted = isMuted && !isComingSoonPill ? 'opacity-40' : '';
+                    const pillSize = 'px-2.5 py-0.5 text-[9px] tracking-wide sm:text-[10px]';
+                    return (
+                      <VaultCardV2Badge
+                        key={idx}
+                        className={`${vaultBadgeV2ClassName(badge.text)} ${pillSize} normal-case font-sans font-semibold tracking-wide ${nonPrimaryMuted} shrink-0`}
+                      >
+                        {badge.text}
+                      </VaultCardV2Badge>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           )}
-        </h3>
-      </div>
+        </div>
 
-      <p className={`flex-1 text-sm mb-6 leading-relaxed font-sans min-h-0 ${isMuted ? 'text-gray-400' : 'text-gray-500'}`}>
-        {vault.description}{' '}
-        {vault.moreInfoUrl ? (
-          <a
-            href={vault.moreInfoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`inline-flex align-baseline ml-0.5 ${isMuted ? 'text-gray-300 hover:text-gray-400' : 'text-gray-400 hover:text-blue-600'} transition-colors`}
-            aria-label={`View ${vault.name} on Morpho (opens in a new tab)`}
+        <div className="mb-6 flex flex-1 flex-col gap-6 sm:mb-8">
+          <div className="min-w-0 w-full">
+            <h3
+              className={`mb-3 font-satoshi text-2xl font-bold tracking-tight leading-tight ${isMuted ? 'text-gray-400' : 'text-[#041c64]'}`}
+            >
+              {vault.titleUrl ? (
+                <a
+                  href={vault.titleUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`rounded-sm hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${isMuted ? 'text-inherit hover:text-gray-500' : 'text-inherit hover:text-blue-700'}`}
+                  aria-label={`${vault.name} on Etherscan (opens in a new tab)`}
+                >
+                  {vault.name}
+                </a>
+              ) : (
+                vault.name
+              )}
+            </h3>
+            <p className={`text-sm leading-relaxed font-medium ${isMuted ? 'text-gray-300' : 'text-gray-500'}`}>
+              {vault.description}{' '}
+              {vault.moreInfoUrl ? (
+                <a
+                  href={vault.moreInfoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`inline-flex align-baseline ${isMuted ? 'text-gray-300 hover:text-gray-400' : 'text-gray-400 hover:text-blue-600'} transition-colors`}
+                  aria-label={`View ${vault.name} on Morpho (opens in a new tab)`}
+                >
+                  <ExternalLink className="inline-block h-3 w-3" />
+                </a>
+              ) : (
+                <ExternalLink className={`ml-0.5 inline-block h-3 w-3 ${isMuted ? 'text-gray-300' : 'text-gray-400'}`} aria-hidden />
+              )}
+            </p>
+          </div>
+
+          <div
+            className={`mt-auto flex w-full min-w-0 flex-col gap-5 sm:flex-row sm:justify-between sm:gap-6 lg:gap-10 ${isMuted ? 'opacity-40' : ''}`}
           >
-            <ExternalLink className="inline-block w-3 h-3" />
-          </a>
-        ) : (
-          <ExternalLink className={`inline-block w-3 h-3 ml-1 ${isMuted ? 'text-gray-300' : 'text-gray-400'}`} aria-hidden />
-        )}
-      </p>
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <span className="text-[11px] font-sans font-semibold tracking-wide text-[#041c64]/75 uppercase sm:text-xs">
+                Net coverage yield
+              </span>
+              <div className="flex items-baseline gap-1">
+                <span className="font-satoshi text-4xl font-bold tracking-tight text-[#041c64]">
+                  {coveredApyFromStats(vault.stats)}
+                </span>
+                <span className="text-sm font-bold text-blue-500">APY</span>
+              </div>
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <span className="text-[11px] font-sans font-semibold tracking-wide text-[#041c64]/75 uppercase sm:text-xs">
+                TVL cap
+              </span>
+              <span className="font-satoshi text-4xl font-bold tabular-nums tracking-tight text-[#041c64]">
+                {vault.stats.tvlCap}
+              </span>
+            </div>
+          </div>
+        </div>
 
-      <div className="grid w-full min-w-0 grid-cols-3 gap-3 border-t border-gray-50 pt-6 shrink-0">
-        <Stat label="TVL Cap" value={vault.stats.tvlCap} disabled={isMuted} />
-        <Stat label="Covered Vault APY" value={coveredApyFromStats(vault.stats)} disabled={isMuted} />
-        <Stat label="Base Vault APY (Morpho)" value={vault.stats.baseApy} disabled={isMuted} />
-        <Stat 
-          label="APY Boost" 
-          value={vault.stats.apyBoost} 
-          isPositive={!isMuted}
-          disabled={isMuted}
-          icon={<Sparkles className={`w-4 h-4 ${isMuted ? 'text-gray-300' : 'text-green-500'}`} />} 
-        />
-        <Stat label="Current TVL" value={vault.stats.currentTvl} disabled={isMuted} />
-        <Stat
-          label="CHAIN"
-          value={
-            <img
-              src={publicUrl('eth-logo-landscape-gray.png')}
-              alt="Ethereum"
-              className="block h-auto max-h-6 w-full max-w-full object-contain object-left"
+        <div className="mt-auto w-full min-w-0 border-t border-gray-50 pt-5 sm:pt-6">
+          <div className="grid min-w-0 grid-cols-2 gap-x-4 gap-y-5 md:flex md:w-full md:flex-nowrap md:items-end md:justify-start md:gap-x-6 md:gap-y-0 lg:gap-x-8">
+            <VaultCardV3StatItem label="Current TVL" value={vault.stats.currentTvl} disabled={isMuted} />
+            <VaultCardV3StatItem
+              label="Boost"
+              value={vault.stats.apyBoost}
+              isPositive={!isMuted}
+              disabled={isMuted}
             />
-          }
-          valueMedia
-          disabled={isMuted}
-        />
+            <VaultCardV3StatItem label="Base APY" value={vault.stats.baseApy} disabled={isMuted} />
+          </div>
+        </div>
       </div>
+
     </div>
   );
 };
-
-const Stat = ({ label, value, isPositive, disabled, icon, className = '', valueMedia }) => (
-  <div className={`flex min-w-0 flex-col ${className}`}>
-    <span className="text-[10px] uppercase tracking-wider text-gray-400 mb-1 font-sans font-medium">
-      {label}
-    </span>
-    <span
-      className={
-        valueMedia
-          ? `flex min-w-0 max-w-full items-center gap-1 min-h-6 ${disabled ? 'opacity-50' : ''}`
-          : `text-xl font-bold flex items-center gap-1 font-satoshi tracking-tight ${
-              disabled ? 'text-gray-400' : isPositive ? 'text-green-600' : 'text-gray-900'
-            }`
-      }
-    >
-      {value}
-      {icon}
-    </span>
-  </div>
-);
 
 const ComingSoonBrandLogo = ({ id }) => {
   const cls = 'h-6 w-auto text-gray-900';
@@ -311,9 +371,9 @@ const ComingSoonBrandLogo = ({ id }) => {
   }
 };
 
-const ComingSoonMiniCard = ({ name, id, href }) => {
+const ComingSoonMiniCard = ({ name, id, href, appearStagger = 0 }) => {
   const shellClass =
-    'bg-white border border-gray-100 rounded-lg p-5 flex flex-col justify-center items-start shadow-sm transition-all group';
+    'catalysis-card-shell catalysis-card-enter bg-white border border-gray-100 rounded-lg p-5 flex flex-col justify-center items-start shadow-sm transition-shadow duration-300 group hover:border-gray-200/90';
   const body = (
     <>
       <div className="mb-3">
@@ -325,13 +385,16 @@ const ComingSoonMiniCard = ({ name, id, href }) => {
     </>
   );
 
+  const staggerStyle = { '--card-stagger': appearStagger };
+
   if (href) {
     return (
       <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className={`${shellClass} cursor-pointer hover:border-gray-200 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500`}
+        style={staggerStyle}
+        className={`${shellClass} cursor-pointer hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500`}
       >
         {body}
       </a>
@@ -339,7 +402,7 @@ const ComingSoonMiniCard = ({ name, id, href }) => {
   }
 
   return (
-    <div className={`${shellClass} cursor-default`} aria-disabled="true">
+    <div style={staggerStyle} className={`${shellClass} cursor-default`} aria-disabled="true">
       {body}
     </div>
   );
@@ -350,7 +413,7 @@ const Skeleton = ({ className }) => (
 );
 
 const VaultCardSkeleton = () => (
-  <div className="h-full flex flex-col bg-white border border-gray-100 rounded-xl p-6 shadow-sm">
+  <div className="flex h-full min-w-0 flex-col rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
     <div className="flex flex-col gap-4 mb-4">
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-3">
@@ -544,7 +607,7 @@ const Footer = () => (
  */
 function TermsPage() {
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans text-gray-900 flex flex-col">
+    <div className="catalysis-app-surface min-h-screen font-sans text-gray-900 flex flex-col">
       <Navbar />
       <main className="container mx-auto max-w-3xl px-6 flex-1 pb-20 pt-4">
         <Link
@@ -583,11 +646,9 @@ function Home() {
   }, []);
 
   const sortedVaults = [...vaults].sort((a, b) => a.id - b.id);
-  const vaultsFirstRow = sortedVaults.slice(0, 2);
-  const vaultsSecondRow = sortedVaults.slice(2, 4);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans text-gray-900 flex flex-col">
+    <div className="catalysis-app-surface min-h-screen font-sans text-gray-900 flex flex-col">
       <Navbar />
 
       <main className="container mx-auto max-w-6xl px-6 flex-1 pb-20">
@@ -607,14 +668,9 @@ function Home() {
 
         {loading ? (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
-              {[1, 2].map(i => (
+            <div className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-5 lg:mb-20 lg:gap-6">
+              {[1, 2, 3, 4].map((i) => (
                 <VaultCardSkeleton key={i} />
-              ))}
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-24">
-              {[1, 2].map((i) => (
-                <VaultCardSkeleton key={`row2-${i}`} />
               ))}
             </div>
             <section className="mt-16">
@@ -628,23 +684,23 @@ function Home() {
           </>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
-              {vaultsFirstRow.map((vault) => (
-                <VaultCard key={vault.id} vault={vault} />
-              ))}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-24">
-              {vaultsSecondRow.map((vault) => (
-                <VaultCard key={vault.id} vault={vault} />
+            <div className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-5 lg:mb-20 lg:gap-6">
+              {sortedVaults.map((vault, i) => (
+                <VaultCardV3 key={vault.id} vault={vault} appearStagger={i} />
               ))}
             </div>
 
             <section className="mt-16">
                 <h2 className="text-2xl font-bold text-gray-900 mb-8 font-sans">Coming Soon</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {COMING_SOON_DATA.map((item) => (
-                        <ComingSoonMiniCard key={item.id} name={item.name} id={item.id} href={item.href} />
+                    {COMING_SOON_DATA.map((item, i) => (
+                        <ComingSoonMiniCard
+                          key={item.id}
+                          name={item.name}
+                          id={item.id}
+                          href={item.href}
+                          appearStagger={i + 4}
+                        />
                     ))}
                 </div>
             </section>
