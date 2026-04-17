@@ -184,8 +184,8 @@ const VaultCardV2Badge = ({ children, className = '' }) => (
 
 /** Default vault card UI — network top-right, badges under logo */
 
-const VaultCardV3StatItem = ({ label, value, icon, isPositive, disabled }) => (
-  <div className={`flex h-full min-w-0 flex-col ${disabled ? 'opacity-40' : ''}`}>
+const VaultCardV3StatItem = ({ label, value, icon, isPositive, disabled, className = '' }) => (
+  <div className={`flex h-full min-w-0 flex-col ${disabled ? 'opacity-40' : ''} ${className}`.trim()}>
     <span className="mb-1 text-[10px] font-sans font-medium tracking-wider text-gray-400 uppercase">
       {label}
     </span>
@@ -314,22 +314,33 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
             </p>
           </div>
 
-          <div className={`mt-auto flex w-full max-w-md flex-col justify-center ${isMuted ? 'opacity-40' : ''}`}>
-            <span className="mb-1 text-[10px] font-sans font-medium tracking-wider text-gray-400 uppercase">
-              Net coverage yield
-            </span>
-            <div className="flex items-baseline gap-1">
-              <span className="font-satoshi text-4xl font-bold tracking-tight text-[#041c64]">
-                {coveredApyFromStats(vault.stats)}
+          <div
+            className={`mt-auto flex w-full min-w-0 flex-col gap-5 sm:flex-row sm:justify-between sm:gap-6 lg:gap-10 ${isMuted ? 'opacity-40' : ''}`}
+          >
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <span className="text-[11px] font-sans font-semibold tracking-wide text-[#041c64]/75 uppercase sm:text-xs">
+                Net coverage yield
               </span>
-              <span className="text-sm font-bold text-blue-500">APY</span>
+              <div className="flex items-baseline gap-1">
+                <span className="font-satoshi text-4xl font-bold tracking-tight text-[#041c64]">
+                  {coveredApyFromStats(vault.stats)}
+                </span>
+                <span className="text-sm font-bold text-blue-500">APY</span>
+              </div>
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <span className="text-[11px] font-sans font-semibold tracking-wide text-[#041c64]/75 uppercase sm:text-xs">
+                TVL cap
+              </span>
+              <span className="font-satoshi text-4xl font-bold tabular-nums tracking-tight text-[#041c64]">
+                {vault.stats.tvlCap}
+              </span>
             </div>
           </div>
         </div>
 
         <div className="mt-auto w-full min-w-0 border-t border-gray-50 pt-5 sm:pt-6">
-          <div className="grid min-w-0 auto-rows-fr grid-cols-2 items-stretch gap-x-4 gap-y-5 md:grid-cols-4">
-            <VaultCardV3StatItem label="TVL cap" value={vault.stats.tvlCap} disabled={isMuted} />
+          <div className="grid min-w-0 grid-cols-2 gap-x-4 gap-y-5 md:flex md:w-full md:flex-nowrap md:items-end md:justify-start md:gap-x-6 md:gap-y-0 lg:gap-x-8">
             <VaultCardV3StatItem label="Current TVL" value={vault.stats.currentTvl} disabled={isMuted} />
             <VaultCardV3StatItem
               label="Boost"
