@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { 
   ExternalLink, 
@@ -18,9 +18,15 @@ const publicUrl = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, ''
  */
 /** Covered APY = base APY − haircut (percentage points). `haircut` is for calculation only, not rendered. */
 function coveredApyFromStats({ baseApy, haircut = 0 }) {
+  if (baseApy == null || baseApy === '') return '—';
   const base = parseFloat(String(baseApy).replace('%', ''));
-  if (Number.isNaN(base)) return '0.00%';
+  if (Number.isNaN(base)) return '—';
   return `${Math.max(0, base - haircut).toFixed(2)}%`;
+}
+
+function statOrDash(value) {
+  if (value == null || value === '') return '—';
+  return value;
 }
 
 const MOCK_VAULTS = [
@@ -35,14 +41,18 @@ const MOCK_VAULTS = [
     ],
     stats: {
       tvlCap: "$5M",
-      baseApy: "1.47%",
+      baseApy: null,
       haircut: 0.28,
       apyBoost: "+0.75%",
-      currentTvl: "$0.01M"
+      currentTvl: null,
     },
     status: "active",
     moreInfoUrl: "https://app.morpho.org/ethereum/vault/0x2371e134e3455e0593363cBF89d3b6cf53740618/gauntlet-weth-prime",
-    titleUrl: "https://etherscan.io/address/0x45dc31c63a87193555f48c4b95ca61aa119a9b3e"
+    titleUrl: "https://etherscan.io/address/0x45dc31c63a87193555f48c4b95ca61aa119a9b3e",
+    vaultsfyi: {
+      network: "mainnet",
+      vaultAddress: "0x2371e134e3455e0593363cBF89d3b6cf53740618",
+    },
   },
   {
     id: 2,
@@ -251,7 +261,7 @@ const VaultCard = ({ vault }) => {
       <div className="grid w-full min-w-0 grid-cols-3 gap-3 border-t border-gray-50 pt-6 shrink-0">
         <Stat label="TVL Cap" value={vault.stats.tvlCap} disabled={isMuted} />
         <Stat label="Covered Vault APY" value={coveredApyFromStats(vault.stats)} disabled={isMuted} />
-        <Stat label="Base Vault APY (Morpho)" value={vault.stats.baseApy} disabled={isMuted} />
+        <Stat label="Base Vault APY (Morpho)" value={statOrDash(vault.stats.baseApy)} disabled={isMuted} />
         <Stat 
           label="APY Boost" 
           value={vault.stats.apyBoost} 
@@ -259,7 +269,7 @@ const VaultCard = ({ vault }) => {
           disabled={isMuted}
           icon={<Sparkles className={`w-4 h-4 ${isMuted ? 'text-gray-300' : 'text-green-500'}`} />} 
         />
-        <Stat label="Current TVL" value={vault.stats.currentTvl} disabled={isMuted} />
+        <Stat label="Current TVL" value={statOrDash(vault.stats.currentTvl)} disabled={isMuted} />
         <Stat
           label="CHAIN"
           value={
@@ -570,6 +580,11 @@ function TermsPage() {
 function Home() {
   const [vaults, setVaults] = useState([]);
   const [loading, setLoading] = useState(true);
+  const vaultsRef = useRef([]);
+
+  useEffect(() => {
+    vaultsRef.current = vaults;
+  }, [vaults]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -581,6 +596,57 @@ function Home() {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (!import.meta.env.VITE_VAULTS_FYI_API_KEY || vaults.length === 0) return undefined;
+
+    let cancelled = false;
+    let intervalId = null;
+
+    (async () => {
+      const { createVaultsFyiClient, liveStatsFromVaultsFyiDetailed } = await import('./vaultsfyi.js');
+      const client = createVaultsFyiClient();
+      if (!client || cancelled) return;
+
+      async function refresh() {
+        const next = await Promise.all(
+          MOCK_VAULTS.map(async (template) => {
+            const vf = template.vaultsfyi;
+            if (!vf) return { ...template };
+            try {
+              const data = await client.getVault({
+                path: {
+                  network: vf.network,
+                  vaultAddress: vf.vaultAddress,
+                },
+              });
+              return {
+                ...template,
+                stats: {
+                  ...template.stats,
+                  ...liveStatsFromVaultsFyiDetailed(data),
+                },
+              };
+            } catch {
+              const existing = vaultsRef.current.find((v) => v.id === template.id);
+              return existing ? { ...existing } : { ...template };
+            }
+          })
+        );
+        if (!cancelled) setVaults(next);
+      }
+
+      await refresh();
+      if (!cancelled) {
+        intervalId = window.setInterval(refresh, 60_000);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      if (intervalId != null) window.clearInterval(intervalId);
+    };
+  }, [vaults.length]);
 
   const sortedVaults = [...vaults].sort((a, b) => a.id - b.id);
   const vaultsFirstRow = sortedVaults.slice(0, 2);
