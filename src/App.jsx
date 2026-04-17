@@ -14,6 +14,13 @@ const publicUrl = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, ''
 /**
  * MOCK API DATA
  */
+/** Covered APY = base APY − haircut (percentage points). `haircut` is for calculation only, not rendered. */
+function coveredApyFromStats({ baseApy, haircut = 0 }) {
+  const base = parseFloat(String(baseApy).replace('%', ''));
+  if (Number.isNaN(base)) return '0.00%';
+  return `${Math.max(0, base - haircut).toFixed(2)}%`;
+}
+
 const MOCK_VAULTS = [
   {
     id: 1,
@@ -26,8 +33,8 @@ const MOCK_VAULTS = [
     ],
     stats: {
       tvlCap: "$5M",
-      coveredApy: "1.19%",
       baseApy: "1.47%",
+      haircut: 0.28,
       apyBoost: "+0.75%",
       currentTvl: "$0.01M"
     },
@@ -48,8 +55,8 @@ const MOCK_VAULTS = [
     ],
     stats: {
       tvlCap: "$0M",
-      coveredApy: "0.00%",
       baseApy: "0.0%",
+      haircut: 0,
       apyBoost: "0.0%",
       currentTvl: "$0.00M"
     },
@@ -69,8 +76,8 @@ const MOCK_VAULTS = [
     ],
     stats: {
       tvlCap: "$0M",
-      coveredApy: "0.00%",
       baseApy: "0.0%",
+      haircut: 0,
       apyBoost: "0.0%",
       currentTvl: "$0.00M"
     },
@@ -90,8 +97,8 @@ const MOCK_VAULTS = [
     ],
     stats: {
       tvlCap: "$0M",
-      coveredApy: "0.00%",
       baseApy: "0.0%",
+      haircut: 0,
       apyBoost: "0.0%",
       currentTvl: "$0.00M"
     },
@@ -241,7 +248,7 @@ const VaultCard = ({ vault }) => {
 
       <div className="grid grid-cols-2 gap-3 border-t border-gray-50 pt-6 shrink-0 lg:flex lg:items-end lg:justify-between lg:gap-8">
         <Stat label="TVL Cap" value={vault.stats.tvlCap} disabled={isMuted} />
-        <Stat label="Covered Vault APY" value={vault.stats.coveredApy} disabled={isMuted} />
+        <Stat label="Covered Vault APY" value={coveredApyFromStats(vault.stats)} disabled={isMuted} />
         <Stat label="Base Vault APY (Morpho)" value={vault.stats.baseApy} disabled={isMuted} />
         <Stat 
           label="APY Boost" 
