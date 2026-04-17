@@ -8,6 +8,7 @@ import {
   X,
 } from 'lucide-react';
 import coveredVaultTermsHtml from './terms/covered-vault-terms.html?raw';
+import { fetchMorphoVaultBaseApyAndTvl } from './morphoApi.js';
 
 /** Public files must include Vite `base` (see vite.config.js). */
 const publicUrl = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`;
@@ -15,7 +16,7 @@ const publicUrl = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, ''
 /**
  * MOCK API DATA
  */
-/** Covered APY = base APY − haircut (percentage points). `haircut` is for calculation only, not rendered. */
+/** Covered APY = Morpho base APY − haircut (percentage points). `haircut` is for calculation only, not rendered. */
 function coveredApyFromStats({ baseApy, haircut = 0 }) {
   const base = parseFloat(String(baseApy).replace('%', ''));
   if (Number.isNaN(base)) return '0.00%';
@@ -37,7 +38,12 @@ const MOCK_VAULTS = [
       baseApy: "1.47%",
       haircut: 0.28,
       apyBoost: "+0.75%",
-      currentTvl: "$0.01M"
+      currentTvl: "$0.01M",
+      duration: "3 months"
+    },
+    morpho: {
+      address: '0x2371e134e3455e0593363cBF89d3b6cf53740618',
+      chainId: 1
     },
     status: "active",
     moreInfoUrl: "https://app.morpho.org/ethereum/vault/0x2371e134e3455e0593363cBF89d3b6cf53740618/gauntlet-weth-prime",
@@ -58,8 +64,13 @@ const MOCK_VAULTS = [
       tvlCap: "$0M",
       baseApy: "0.0%",
       haircut: 0,
-      apyBoost: "0.0%",
-      currentTvl: "$0.00M"
+      apyBoost: "+0.75%",
+      currentTvl: "$0.00M",
+      duration: "3 months"
+    },
+    morpho: {
+      address: '0xd564F765F9aD3E7d2d6cA782100795a885e8e7C8',
+      chainId: 1
     },
     status: "inactive",
     moreInfoUrl: "https://app.morpho.org/ethereum/vault/0xd564F765F9aD3E7d2d6cA782100795a885e8e7C8/kpk-eth-prime"
@@ -79,8 +90,13 @@ const MOCK_VAULTS = [
       tvlCap: "$0M",
       baseApy: "0.0%",
       haircut: 0,
-      apyBoost: "0.0%",
-      currentTvl: "$0.00M"
+      apyBoost: "+0.75%",
+      currentTvl: "$0.00M",
+      duration: "3 months"
+    },
+    morpho: {
+      address: '0xdd0f28e19C1780eb6396170735D45153D261490d',
+      chainId: 1
     },
     status: "inactive",
     moreInfoUrl: "https://app.morpho.org/ethereum/vault/0xdd0f28e19C1780eb6396170735D45153D261490d/gauntlet-usdc-prime"
@@ -100,8 +116,13 @@ const MOCK_VAULTS = [
       tvlCap: "$0M",
       baseApy: "0.0%",
       haircut: 0,
-      apyBoost: "0.0%",
-      currentTvl: "$0.00M"
+      apyBoost: "+0.75%",
+      currentTvl: "$0.00M",
+      duration: "3 months"
+    },
+    morpho: {
+      address: '0xbeef0046fcab1dE47E41fB75BB3dC4Dfc94108E3',
+      chainId: 1
     },
     status: "inactive",
     moreInfoUrl: "https://app.morpho.org/ethereum/vault/0xbeef0046fcab1dE47E41fB75BB3dC4Dfc94108E3/steakhouse-prime-instant"
@@ -323,7 +344,7 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
               </span>
               <div className="flex items-baseline gap-1">
                 <span className="font-satoshi text-4xl font-bold tracking-tight text-[#041c64]">
-                  {coveredApyFromStats(vault.stats)}
+                  {vault.status === 'inactive' ? '0.00%' : coveredApyFromStats(vault.stats)}
                 </span>
                 <span className="text-sm font-bold text-blue-500">APY</span>
               </div>
@@ -348,7 +369,8 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
               isPositive={!isMuted}
               disabled={isMuted}
             />
-            <VaultCardV3StatItem label="Base APY" value={vault.stats.baseApy} disabled={isMuted} />
+            <VaultCardV3StatItem label="Morpho base APY" value={vault.stats.baseApy} disabled={isMuted} />
+            <VaultCardV3StatItem label="Duration" value={vault.stats.duration} disabled={isMuted} />
           </div>
         </div>
       </div>
@@ -641,14 +663,50 @@ function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setVaults(MOCK_VAULTS);
-      setLoading(false);
+    const MORPHO_POLL_MS = 10 * 60 * 1000;
+    let cancelled = false;
+
+    const mergeMorphoIntoVaults = async () => {
+      const merged = await Promise.all(
+        MOCK_VAULTS.map(async (vault) => {
+          if (!vault.morpho) return vault;
+          try {
+            const live = await fetchMorphoVaultBaseApyAndTvl(
+              vault.morpho.address,
+              vault.morpho.chainId
+            );
+            return {
+              ...vault,
+              stats: {
+                ...vault.stats,
+                ...(live.baseApy != null ? { baseApy: live.baseApy } : {}),
+                ...(live.currentTvl != null ? { currentTvl: live.currentTvl } : {}),
+              },
+            };
+          } catch {
+            return vault;
+          }
+        })
+      );
+      if (!cancelled) setVaults(merged);
     };
 
-    fetchData();
+    const run = async (isInitial) => {
+      if (isInitial) setLoading(true);
+      try {
+        await mergeMorphoIntoVaults();
+      } finally {
+        if (isInitial && !cancelled) setLoading(false);
+      }
+    };
+
+    run(true);
+    const intervalId = setInterval(() => run(false), MORPHO_POLL_MS);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
   }, []);
 
   const sortedVaults = [...vaults].sort((a, b) => a.id - b.id);
