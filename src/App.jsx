@@ -473,21 +473,29 @@ const VaultCardV2 = ({ vault, appearStagger = 0, gridClassName = '' }) => {
 /** Alternate vault card UI (?card=v3) — network top-right, badges under logo */
 const brandBlueV3 = '#0047FF';
 
-const VaultCardV3StatItem = ({ label, value, icon, isPositive, disabled }) => (
-  <div className={`flex min-w-0 flex-col gap-0.5 ${disabled ? 'opacity-40' : ''}`}>
-    <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">{label}</span>
-    <div className="flex min-w-0 items-center gap-1.5">
-      <span
-        className={`truncate font-satoshi text-lg font-bold tracking-tight ${
-          isPositive ? 'text-blue-600' : 'text-[#041c64]'
-        }`}
-      >
-        {value}
-      </span>
-      {icon}
+const VaultCardV3StatItem = ({ label, value, icon, isPositive, disabled, compact = false, panelLarge = false }) => {
+  const labelCls = panelLarge
+    ? 'mb-1 text-[10px] font-bold tracking-widest text-gray-400 uppercase sm:text-[11px]'
+    : compact
+      ? 'mb-1 text-[9px] font-bold tracking-widest text-gray-400 uppercase'
+      : 'mb-1 text-[10px] font-bold tracking-widest text-gray-400 uppercase';
+  const valueCls = panelLarge
+    ? 'truncate font-satoshi text-xl font-black tabular-nums tracking-tight sm:text-2xl'
+    : compact
+      ? 'truncate font-satoshi text-base font-bold tabular-nums tracking-tight'
+      : 'truncate font-satoshi text-lg font-bold tabular-nums tracking-tight';
+  const rowMin = panelLarge ? 'min-h-[1.75rem]' : 'min-h-[1.375rem]';
+
+  return (
+    <div className={`flex h-full min-w-0 flex-col ${disabled ? 'opacity-40' : ''}`}>
+      <span className={labelCls}>{label}</span>
+      <div className={`mt-auto flex ${rowMin} min-w-0 items-end gap-1.5 pt-0.5`}>
+        <span className={`${valueCls} ${isPositive ? 'text-blue-600' : 'text-[#041c64]'}`}>{value}</span>
+        {icon}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const EthereumGlyphV3 = ({ className = 'h-4 w-4 shrink-0' }) => (
   <svg className={className} viewBox="0 0 784 1277" fill="none" aria-hidden>
@@ -499,6 +507,8 @@ const EthereumGlyphV3 = ({ className = 'h-4 w-4 shrink-0' }) => (
 const VaultCardV3 = ({ vault, appearStagger = 0, gridClassName = '' }) => {
   const isComingSoon = Boolean(vault.isComingSoon);
   const isMuted = isComingSoon || vault.status === 'inactive';
+  const isBentoWide = gridClassName.includes('md:col-span-7');
+  const isNarrowBento = gridClassName.includes('md:col-span-5');
 
   return (
     <div
@@ -516,7 +526,7 @@ const VaultCardV3 = ({ vault, appearStagger = 0, gridClassName = '' }) => {
         aria-hidden
       />
 
-      <div className="relative z-10 flex h-full flex-col p-6 sm:p-7">
+      <div className={`relative z-10 flex h-full flex-col ${isNarrowBento ? 'p-5 sm:p-6' : 'p-6 sm:p-7'}`}>
         {isComingSoon && (
           <div className="mb-4 sm:hidden">
             <VaultCardV2Badge className={vaultBadgeV2ClassName(vault.badges[0].text)}>
@@ -525,40 +535,48 @@ const VaultCardV3 = ({ vault, appearStagger = 0, gridClassName = '' }) => {
           </div>
         )}
 
-        <div className="mb-6 flex items-start justify-between gap-4 sm:mb-8">
-          <div className="flex min-w-0 flex-col gap-3">
-            <div className="w-fit rounded-xl border border-gray-100 bg-gray-50 p-2.5 transition-colors duration-300 group-hover:border-blue-100">
+        <div className="mb-5 space-y-3 sm:mb-6">
+          <div className="flex items-center justify-between gap-3">
+            <div
+              className={`w-fit shrink-0 rounded-lg border border-gray-100 bg-gray-50 transition-colors duration-300 group-hover:border-blue-100 ${isNarrowBento ? 'p-2' : 'p-2.5'}`}
+            >
               <img
                 src={vault.icon}
                 alt=""
-                className={`h-9 w-auto max-w-[200px] object-contain object-left ${isMuted ? 'grayscale opacity-40' : ''}`}
+                className={`w-auto object-contain object-left ${isNarrowBento ? 'h-8 max-w-[160px]' : 'h-9 max-w-[200px]'} ${isMuted ? 'grayscale opacity-40' : ''}`}
               />
             </div>
-            <div className="flex flex-wrap gap-2">
-              {vault.badges.map((badge, idx) => {
-                const hideOnMobile = isComingSoon && idx === 0;
-                return (
-                  <VaultCardV2Badge
-                    key={idx}
-                    className={`${vaultBadgeV2ClassName(badge.text)} ${hideOnMobile ? 'hidden sm:inline-flex' : ''}`}
-                  >
-                    {badge.text}
-                  </VaultCardV2Badge>
-                );
-              })}
+
+            <div
+              className={`flex shrink-0 flex-col items-end rounded-xl border border-gray-100 bg-gray-50/50 p-2.5 px-3 transition-all duration-300 sm:rounded-2xl sm:p-3 sm:px-4 ${isMuted ? 'opacity-40' : 'group-hover:bg-blue-50/40'}`}
+            >
+              <span className="mb-1 text-[9px] leading-none font-black tracking-[0.2em] text-blue-600 uppercase">
+                Network
+              </span>
+              <div className="flex items-center gap-2">
+                <EthereumGlyphV3 />
+                <span className="text-sm font-black tracking-tight text-[#041c64] uppercase">Ethereum</span>
+              </div>
             </div>
           </div>
 
-          <div
-            className={`flex shrink-0 flex-col items-end rounded-2xl border border-gray-100 bg-gray-50/50 p-3 px-4 transition-all duration-300 ${isMuted ? 'opacity-40' : 'group-hover:bg-blue-50/40'}`}
-          >
-            <span className="mb-1 text-[9px] leading-none font-black tracking-[0.2em] text-blue-600 uppercase">
-              Network
-            </span>
-            <div className="flex items-center gap-2">
-              <EthereumGlyphV3 />
-              <span className="text-sm font-black tracking-tight text-[#041c64] uppercase">Ethereum</span>
-            </div>
+          <div className="flex min-w-0 flex-wrap gap-1.5 sm:gap-2">
+            {vault.badges.map((badge, idx) => {
+              const hideOnMobile = isComingSoon && idx === 0;
+              const isComingSoonPill = badge.text.toLowerCase().includes('coming soon');
+              const nonPrimaryMuted = isMuted && !isComingSoonPill ? 'opacity-40' : '';
+              const pillSize = isNarrowBento
+                ? 'px-2 py-px text-[9px] tracking-wide'
+                : 'px-2.5 py-0.5 text-[9px] tracking-wide sm:text-[10px]';
+              return (
+                <VaultCardV2Badge
+                  key={idx}
+                  className={`${vaultBadgeV2ClassName(badge.text)} ${pillSize} ${hideOnMobile ? 'hidden sm:inline-flex' : ''} ${nonPrimaryMuted} shrink-0`}
+                >
+                  {badge.text}
+                </VaultCardV2Badge>
+              );
+            })}
           </div>
         </div>
 
@@ -600,33 +618,76 @@ const VaultCardV3 = ({ vault, appearStagger = 0, gridClassName = '' }) => {
           </div>
 
           <div
-            className={`flex flex-col justify-center rounded-2xl border border-gray-100 bg-gray-50/50 p-4 transition-colors duration-300 lg:col-span-5 ${isMuted ? 'opacity-40' : 'group-hover:bg-blue-50/40'}`}
+            className={`flex min-w-0 flex-col gap-3 lg:col-span-5 ${isBentoWide ? 'lg:min-h-0' : ''}`}
           >
-            <span className="mb-1 text-[10px] font-black tracking-[0.2em] text-blue-600 uppercase">
-              Net coverage yield
-            </span>
-            <div className="flex items-baseline gap-1">
-              <span className="font-satoshi text-4xl font-black tracking-tighter text-[#041c64]">
-                {coveredApyFromStats(vault.stats)}
+            <div
+              className={`flex flex-col justify-center rounded-2xl border border-gray-100 bg-gray-50/50 p-4 transition-colors duration-300 ${isMuted ? 'opacity-40' : 'group-hover:bg-blue-50/40'}`}
+            >
+              <span className="mb-1 text-[10px] font-black tracking-[0.2em] text-blue-600 uppercase">
+                Net coverage yield
               </span>
-              <span className="text-sm font-bold text-blue-500">APY</span>
+              <div className="flex items-baseline gap-1">
+                <span className="font-satoshi text-4xl font-black tracking-tighter text-[#041c64]">
+                  {coveredApyFromStats(vault.stats)}
+                </span>
+                <span className="text-sm font-bold text-blue-500">APY</span>
+              </div>
             </div>
+
+            {isBentoWide && (
+              <div className="grid grid-cols-2 gap-3 rounded-xl border border-gray-100 bg-gray-50/40 p-3 sm:gap-4 sm:p-4">
+                <VaultCardV3StatItem
+                  compact
+                  panelLarge
+                  label="TVL cap"
+                  value={vault.stats.tvlCap}
+                  disabled={isMuted}
+                />
+                <VaultCardV3StatItem
+                  compact
+                  panelLarge
+                  label="Current TVL"
+                  value={vault.stats.currentTvl}
+                  disabled={isMuted}
+                />
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="mt-auto border-t border-gray-50 pt-6">
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-            <VaultCardV3StatItem label="TVL Cap" value={vault.stats.tvlCap} disabled={isMuted} />
-            <VaultCardV3StatItem label="Current TVL" value={vault.stats.currentTvl} disabled={isMuted} />
-            <VaultCardV3StatItem
-              label="Boost"
-              value={vault.stats.apyBoost}
-              isPositive={!isMuted}
-              disabled={isMuted}
-              icon={<Sparkles className="h-3.5 w-3.5 shrink-0 fill-blue-400 text-blue-400" />}
-            />
-            <VaultCardV3StatItem label="Base APY" value={vault.stats.baseApy} disabled={isMuted} />
-          </div>
+        <div className={`mt-auto w-full min-w-0 ${isBentoWide ? 'pt-3' : 'border-t border-gray-50 pt-4 sm:pt-5'}`}>
+          {isBentoWide ? (
+            <div
+              className={`grid grid-cols-2 gap-3 rounded-xl border border-gray-100 bg-gray-50/40 p-3 sm:gap-4 sm:p-4 ${isMuted ? 'opacity-40' : ''}`}
+            >
+              <VaultCardV3StatItem
+                compact
+                panelLarge
+                label="Boost"
+                value={vault.stats.apyBoost}
+                isPositive={!isMuted}
+                disabled={false}
+                icon={<Sparkles className="h-4 w-4 shrink-0 fill-blue-400 text-blue-400 sm:h-5 sm:w-5" />}
+              />
+              <VaultCardV3StatItem compact panelLarge label="Base APY" value={vault.stats.baseApy} disabled={false} />
+            </div>
+          ) : (
+            <div
+              className={`grid min-w-0 auto-rows-fr grid-cols-2 items-stretch gap-2.5 rounded-xl border border-gray-100 bg-gray-50/40 p-2.5 sm:gap-3 sm:p-3 ${isMuted ? 'opacity-40' : ''}`}
+            >
+              <VaultCardV3StatItem compact label="TVL cap" value={vault.stats.tvlCap} disabled={false} />
+              <VaultCardV3StatItem compact label="Current TVL" value={vault.stats.currentTvl} disabled={false} />
+              <VaultCardV3StatItem
+                compact
+                label="Boost"
+                value={vault.stats.apyBoost}
+                isPositive={!isMuted}
+                disabled={false}
+                icon={<Sparkles className="h-3.5 w-3.5 shrink-0 fill-blue-400 text-blue-400" />}
+              />
+              <VaultCardV3StatItem compact label="Base APY" value={vault.stats.baseApy} disabled={false} />
+            </div>
+          )}
         </div>
       </div>
 
