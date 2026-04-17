@@ -217,24 +217,24 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
     >
       <div className="relative z-10 flex h-full flex-col p-6 sm:p-7">
         <div className="mb-5 space-y-3 sm:mb-6">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex min-w-0 flex-1 items-center sm:gap-3">
-              <div className="w-fit shrink-0 rounded-lg border border-gray-100 bg-gray-50 p-2.5 transition-colors duration-300 group-hover:border-blue-100">
+          <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+            <div className="flex min-w-0 w-full max-w-full items-center sm:min-w-0 sm:flex-1 sm:pr-2">
+              <div className="min-w-0 max-w-full rounded-lg border border-gray-100 bg-gray-50 p-2.5 transition-colors duration-300 group-hover:border-blue-100">
                 <img
                   src={vault.icon}
                   alt=""
-                  className={`h-9 max-w-[200px] w-auto object-contain object-left ${isMuted ? 'grayscale opacity-40' : ''}`}
+                  className={`h-9 max-h-9 w-auto max-w-full object-contain object-left ${isMuted ? 'grayscale opacity-40' : ''}`}
                 />
               </div>
             </div>
 
             <div
-              className={`flex shrink-0 flex-col items-end rounded-xl border border-gray-100 bg-gray-50/50 p-2.5 px-3 transition-all duration-300 sm:rounded-2xl sm:p-3 sm:px-4 ${isMuted ? 'opacity-40' : 'group-hover:bg-blue-50/40'}`}
+              className={`flex w-fit max-w-full shrink-0 flex-col self-end sm:self-auto rounded-xl border border-gray-100 bg-gray-50/50 p-2 px-2.5 transition-all duration-300 sm:rounded-2xl sm:p-3 sm:px-4 ${isMuted ? 'opacity-40' : 'group-hover:bg-blue-50/40'}`}
             >
               <img
                 src={publicUrl('eth-logo-landscape-gray.png')}
                 alt="Ethereum"
-                className="block h-5 w-auto max-w-[124px] object-contain object-right"
+                className="block h-4 w-auto max-w-[min(100%,7.5rem)] object-contain object-right sm:h-5 sm:max-w-[124px]"
               />
             </div>
           </div>
@@ -464,7 +464,7 @@ const Navbar = () => {
 
   return (
     <div className="sticky top-6 z-50 flex justify-center w-full px-4 mb-16">
-      <div className="relative w-full max-w-[668px]">
+      <div className="relative w-full max-w-5xl">
         <nav
           style={{
             minHeight: '58px',
@@ -609,7 +609,7 @@ function TermsPage() {
   return (
     <div className="catalysis-app-surface min-h-screen font-sans text-gray-900 flex flex-col">
       <Navbar />
-      <main className="container mx-auto max-w-3xl px-6 flex-1 pb-20 pt-4">
+      <main className="mx-auto w-full max-w-3xl px-6 flex-1 pb-20 pt-4">
         <Link
           to="/"
           className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-600 transition-colors mb-8 font-sans"
@@ -651,7 +651,7 @@ function Home() {
     <div className="catalysis-app-surface min-h-screen font-sans text-gray-900 flex flex-col">
       <Navbar />
 
-      <main className="container mx-auto max-w-6xl px-6 flex-1 pb-20">
+      <main className="mx-auto w-full max-w-[1440px] px-6 sm:px-8 lg:px-10 flex-1 pb-20">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 rounded-lg overflow-hidden shadow-lg shadow-blue-500/20 shrink-0 ring-1 ring-black/5">
             <img
