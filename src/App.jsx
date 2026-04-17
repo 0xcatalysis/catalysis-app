@@ -187,12 +187,12 @@ const VaultCard = ({ vault }) => {
         </div>
       )}
       <div className="flex flex-col gap-4 mb-4">
-        <div className="flex justify-between items-start gap-3">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
+        <div className="flex justify-between items-center gap-3">
+          <div className="flex min-w-0 flex-1 items-center gap-3">
             <img 
               src={vault.icon} 
               alt="" 
-              className={`h-10 w-auto max-w-full max-h-10 object-contain object-left shrink-0 ${isMuted ? 'grayscale opacity-50' : ''}`} 
+              className={`h-10 w-auto max-h-10 max-w-full shrink-0 object-contain object-left ${isMuted ? 'grayscale opacity-50' : ''}`} 
             />
             {/* Desktop: Coming Soon next to icon; mobile: shown at top */}
             {isComingSoon && (
@@ -201,7 +201,7 @@ const VaultCard = ({ vault }) => {
               </Badge>
             )}
           </div>
-          <div className="flex gap-1.5">
+          <div className="flex shrink-0 items-center justify-end gap-1.5">
             {vault.badges.map((badge, idx) => (
               (!isComingSoon || idx !== 0) && (
                 <Badge key={idx} className={badge.color}>
@@ -246,7 +246,7 @@ const VaultCard = ({ vault }) => {
         )}
       </p>
 
-      <div className="grid grid-cols-2 gap-3 border-t border-gray-50 pt-6 shrink-0 lg:flex lg:items-end lg:justify-between lg:gap-8">
+      <div className="grid w-full min-w-0 grid-cols-3 gap-3 border-t border-gray-50 pt-6 shrink-0">
         <Stat label="TVL Cap" value={vault.stats.tvlCap} disabled={isMuted} />
         <Stat label="Covered Vault APY" value={coveredApyFromStats(vault.stats)} disabled={isMuted} />
         <Stat label="Base Vault APY (Morpho)" value={vault.stats.baseApy} disabled={isMuted} />
@@ -257,20 +257,38 @@ const VaultCard = ({ vault }) => {
           disabled={isMuted}
           icon={<Sparkles className={`w-4 h-4 ${isMuted ? 'text-gray-300' : 'text-green-500'}`} />} 
         />
-        <Stat label="Current TVL" value={vault.stats.currentTvl} disabled={isMuted} className="col-span-2 sm:col-span-1" />
+        <Stat label="Current TVL" value={vault.stats.currentTvl} disabled={isMuted} />
+        <Stat
+          label="CHAIN"
+          value={
+            <img
+              src={publicUrl('eth-logo-landscape-gray.png')}
+              alt="Ethereum"
+              className="block h-auto max-h-6 w-full max-w-full object-contain object-left"
+            />
+          }
+          valueMedia
+          disabled={isMuted}
+        />
       </div>
     </div>
   );
 };
 
-const Stat = ({ label, value, isPositive, disabled, icon, className = '' }) => (
-  <div className={`flex flex-col ${className}`}>
+const Stat = ({ label, value, isPositive, disabled, icon, className = '', valueMedia }) => (
+  <div className={`flex min-w-0 flex-col ${className}`}>
     <span className="text-[10px] uppercase tracking-wider text-gray-400 mb-1 font-sans font-medium">
       {label}
     </span>
-    <span className={`text-xl font-bold flex items-center gap-1 font-satoshi tracking-tight ${
-      disabled ? 'text-gray-400' : isPositive ? 'text-green-600' : 'text-gray-900'
-    }`}>
+    <span
+      className={
+        valueMedia
+          ? `flex min-w-0 max-w-full items-center gap-1 min-h-6 ${disabled ? 'opacity-50' : ''}`
+          : `text-xl font-bold flex items-center gap-1 font-satoshi tracking-tight ${
+              disabled ? 'text-gray-400' : isPositive ? 'text-green-600' : 'text-gray-900'
+            }`
+      }
+    >
       {value}
       {icon}
     </span>
