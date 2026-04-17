@@ -1,7 +1,7 @@
+@import url("https://api.fontshare.com/v2/css?f[]=satoshi@700,600,500,400&f[]=general-sans@500,400&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import url("https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&f[]=general-sans@500,400&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -13,7 +13,7 @@
     --radius-2xl: calc(var(--radius) + 8px);
     --radius-3xl: calc(var(--radius) + 12px);
     --radius-4xl: calc(var(--radius) + 16px);
-    --font-sans: "General Sans", system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    --font-sans: "Satoshi", "General Sans", system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-card: var(--card);
@@ -121,12 +121,11 @@
     @apply border-border outline-ring/50;
     }
   body {
-    @apply bg-background text-foreground;
-    font-family: "General Sans", system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-    }
+    @apply bg-background text-foreground font-sans;
+  }
 
   .font-satoshi {
-    font-family: "Satoshi", system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-sans);
   }
 
   .font-general-sans {
