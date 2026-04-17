@@ -23,6 +23,9 @@ function coveredApyFromStats({ baseApy, haircut = 0 }) {
   return `${Math.max(0, base - haircut).toFixed(2)}%`;
 }
 
+/** md+ 12-column vault mosaic: ~58/42 width split, mirrored on row 2 (subtle vs equal halves) */
+const VAULT_BENTO_GRID_SPANS = ['md:col-span-7', 'md:col-span-5', 'md:col-span-5', 'md:col-span-7'];
+
 const MOCK_VAULTS = [
   {
     id: 1,
@@ -174,12 +177,15 @@ const Badge = ({ children, className }) => (
   </span>
 );
 
-const VaultCard = ({ vault }) => {
+const VaultCard = ({ vault, appearStagger = 0, gridClassName = '' }) => {
   const isComingSoon = Boolean(vault.isComingSoon);
   const isMuted = isComingSoon || vault.status === 'inactive';
 
   return (
-    <div className={`h-full flex flex-col bg-white border border-gray-100 rounded-xl p-6 shadow-sm transition-all ${isMuted ? 'opacity-80' : 'hover:shadow-md'}`}>
+    <div
+      className={`catalysis-card-shell catalysis-card-enter h-full min-w-0 flex flex-col bg-white border border-gray-100 rounded-xl p-6 shadow-sm transition-shadow duration-300 ${isMuted ? 'opacity-80' : 'hover:shadow-md hover:border-gray-200/90'} ${gridClassName}`.trim()}
+      style={{ '--card-stagger': appearStagger }}
+    >
       {/* Mobile: Coming Soon pill above all content */}
       {isComingSoon && (
         <div className="sm:hidden mb-3">
@@ -190,27 +196,25 @@ const VaultCard = ({ vault }) => {
       )}
       <div className="flex flex-col gap-4 mb-4">
         <div className="flex justify-between items-center gap-3">
-          <div className="flex min-w-0 flex-1 items-center gap-3">
-            <img 
-              src={vault.icon} 
-              alt="" 
-              className={`h-10 w-auto max-h-10 max-w-full shrink-0 object-contain object-left ${isMuted ? 'grayscale opacity-50' : ''}`} 
+          <div className="flex min-w-0 flex-1 items-center">
+            <img
+              src={vault.icon}
+              alt=""
+              className={`h-10 w-auto max-h-10 max-w-full shrink-0 object-contain object-left ${isMuted ? 'grayscale opacity-50' : ''}`}
             />
-            {/* Desktop: Coming Soon next to icon; mobile: shown at top */}
-            {isComingSoon && (
-              <Badge className={`${vault.badges[0].color} hidden sm:inline-flex`}>
-                {vault.badges[0].text}
-              </Badge>
-            )}
           </div>
-          <div className="flex shrink-0 items-center justify-end gap-1.5">
-            {vault.badges.map((badge, idx) => (
-              (!isComingSoon || idx !== 0) && (
-                <Badge key={idx} className={badge.color}>
+          <div className="flex min-w-0 shrink-0 flex-wrap items-center justify-end gap-1.5 sm:flex-nowrap">
+            {vault.badges.map((badge, idx) => {
+              const hideInHeaderOnMobile = isComingSoon && idx === 0;
+              return (
+                <Badge
+                  key={idx}
+                  className={`${badge.color} ${hideInHeaderOnMobile ? 'hidden sm:inline-flex' : ''}`}
+                >
                   {badge.text}
                 </Badge>
-              )
-            ))}
+              );
+            })}
           </div>
         </div>
         
@@ -311,9 +315,9 @@ const ComingSoonBrandLogo = ({ id }) => {
   }
 };
 
-const ComingSoonMiniCard = ({ name, id, href }) => {
+const ComingSoonMiniCard = ({ name, id, href, appearStagger = 0 }) => {
   const shellClass =
-    'bg-white border border-gray-100 rounded-lg p-5 flex flex-col justify-center items-start shadow-sm transition-all group';
+    'catalysis-card-shell catalysis-card-enter bg-white border border-gray-100 rounded-lg p-5 flex flex-col justify-center items-start shadow-sm transition-shadow duration-300 group hover:border-gray-200/90';
   const body = (
     <>
       <div className="mb-3">
@@ -325,13 +329,16 @@ const ComingSoonMiniCard = ({ name, id, href }) => {
     </>
   );
 
+  const staggerStyle = { '--card-stagger': appearStagger };
+
   if (href) {
     return (
       <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className={`${shellClass} cursor-pointer hover:border-gray-200 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500`}
+        style={staggerStyle}
+        className={`${shellClass} cursor-pointer hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500`}
       >
         {body}
       </a>
@@ -339,7 +346,7 @@ const ComingSoonMiniCard = ({ name, id, href }) => {
   }
 
   return (
-    <div className={`${shellClass} cursor-default`} aria-disabled="true">
+    <div style={staggerStyle} className={`${shellClass} cursor-default`} aria-disabled="true">
       {body}
     </div>
   );
@@ -349,8 +356,10 @@ const Skeleton = ({ className }) => (
   <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
 );
 
-const VaultCardSkeleton = () => (
-  <div className="h-full flex flex-col bg-white border border-gray-100 rounded-xl p-6 shadow-sm">
+const VaultCardSkeleton = ({ gridClassName = '' }) => (
+  <div
+    className={`h-full min-w-0 flex flex-col bg-white border border-gray-100 rounded-xl p-6 shadow-sm ${gridClassName}`.trim()}
+  >
     <div className="flex flex-col gap-4 mb-4">
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-3">
@@ -544,7 +553,7 @@ const Footer = () => (
  */
 function TermsPage() {
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans text-gray-900 flex flex-col">
+    <div className="catalysis-app-surface min-h-screen font-sans text-gray-900 flex flex-col">
       <Navbar />
       <main className="container mx-auto max-w-3xl px-6 flex-1 pb-20 pt-4">
         <Link
@@ -583,11 +592,9 @@ function Home() {
   }, []);
 
   const sortedVaults = [...vaults].sort((a, b) => a.id - b.id);
-  const vaultsFirstRow = sortedVaults.slice(0, 2);
-  const vaultsSecondRow = sortedVaults.slice(2, 4);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans text-gray-900 flex flex-col">
+    <div className="catalysis-app-surface min-h-screen font-sans text-gray-900 flex flex-col">
       <Navbar />
 
       <main className="container mx-auto max-w-6xl px-6 flex-1 pb-20">
@@ -607,14 +614,9 @@ function Home() {
 
         {loading ? (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
-              {[1, 2].map(i => (
-                <VaultCardSkeleton key={i} />
-              ))}
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-24">
-              {[1, 2].map((i) => (
-                <VaultCardSkeleton key={`row2-${i}`} />
+            <div className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-5 md:grid-cols-12 md:gap-5 lg:mb-20 lg:gap-6">
+              {VAULT_BENTO_GRID_SPANS.map((spanClass, i) => (
+                <VaultCardSkeleton key={i} gridClassName={spanClass} />
               ))}
             </div>
             <section className="mt-16">
@@ -628,23 +630,28 @@ function Home() {
           </>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
-              {vaultsFirstRow.map((vault) => (
-                <VaultCard key={vault.id} vault={vault} />
-              ))}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-24">
-              {vaultsSecondRow.map((vault) => (
-                <VaultCard key={vault.id} vault={vault} />
+            <div className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-5 md:grid-cols-12 md:gap-5 lg:mb-20 lg:gap-6">
+              {sortedVaults.map((vault, i) => (
+                <VaultCard
+                  key={vault.id}
+                  vault={vault}
+                  appearStagger={i}
+                  gridClassName={VAULT_BENTO_GRID_SPANS[i] ?? 'md:col-span-6'}
+                />
               ))}
             </div>
 
             <section className="mt-16">
                 <h2 className="text-2xl font-bold text-gray-900 mb-8 font-sans">Coming Soon</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {COMING_SOON_DATA.map((item) => (
-                        <ComingSoonMiniCard key={item.id} name={item.name} id={item.id} href={item.href} />
+                    {COMING_SOON_DATA.map((item, i) => (
+                        <ComingSoonMiniCard
+                          key={item.id}
+                          name={item.name}
+                          id={item.id}
+                          href={item.href}
+                          appearStagger={i + 4}
+                        />
                     ))}
                 </div>
             </section>
