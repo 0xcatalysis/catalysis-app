@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { 
   ExternalLink, 
   Github, 
@@ -7,6 +8,7 @@ import {
   Menu,
   X,
 } from 'lucide-react';
+import coveredVaultTermsHtml from './terms/covered-vault-terms.html?raw';
 
 /** Public files must include Vite `base` (see vite.config.js). */
 const publicUrl = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`;
@@ -14,6 +16,13 @@ const publicUrl = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\//, ''
 /**
  * MOCK API DATA
  */
+/** Covered APY = base APY − haircut (percentage points). `haircut` is for calculation only, not rendered. */
+function coveredApyFromStats({ baseApy, haircut = 0 }) {
+  const base = parseFloat(String(baseApy).replace('%', ''));
+  if (Number.isNaN(base)) return '0.00%';
+  return `${Math.max(0, base - haircut).toFixed(2)}%`;
+}
+
 const MOCK_VAULTS = [
   {
     id: 1,
@@ -26,8 +35,8 @@ const MOCK_VAULTS = [
     ],
     stats: {
       tvlCap: "$5M",
-      coveredApy: "1.19%",
       baseApy: "1.47%",
+      haircut: 0.28,
       apyBoost: "+0.75%",
       currentTvl: "$0.01M"
     },
@@ -48,8 +57,8 @@ const MOCK_VAULTS = [
     ],
     stats: {
       tvlCap: "$0M",
-      coveredApy: "0.00%",
       baseApy: "0.0%",
+      haircut: 0,
       apyBoost: "0.0%",
       currentTvl: "$0.00M"
     },
@@ -69,8 +78,8 @@ const MOCK_VAULTS = [
     ],
     stats: {
       tvlCap: "$0M",
-      coveredApy: "0.00%",
       baseApy: "0.0%",
+      haircut: 0,
       apyBoost: "0.0%",
       currentTvl: "$0.00M"
     },
@@ -90,8 +99,8 @@ const MOCK_VAULTS = [
     ],
     stats: {
       tvlCap: "$0M",
-      coveredApy: "0.00%",
       baseApy: "0.0%",
+      haircut: 0,
       apyBoost: "0.0%",
       currentTvl: "$0.00M"
     },
@@ -180,12 +189,12 @@ const VaultCard = ({ vault }) => {
         </div>
       )}
       <div className="flex flex-col gap-4 mb-4">
-        <div className="flex justify-between items-start gap-3">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
+        <div className="flex justify-between items-center gap-3">
+          <div className="flex min-w-0 flex-1 items-center gap-3">
             <img 
               src={vault.icon} 
               alt="" 
-              className={`h-10 w-auto max-w-full max-h-10 object-contain object-left shrink-0 ${isMuted ? 'grayscale opacity-50' : ''}`} 
+              className={`h-10 w-auto max-h-10 max-w-full shrink-0 object-contain object-left ${isMuted ? 'grayscale opacity-50' : ''}`} 
             />
             {/* Desktop: Coming Soon next to icon; mobile: shown at top */}
             {isComingSoon && (
@@ -194,7 +203,7 @@ const VaultCard = ({ vault }) => {
               </Badge>
             )}
           </div>
-          <div className="flex gap-1.5">
+          <div className="flex shrink-0 items-center justify-end gap-1.5">
             {vault.badges.map((badge, idx) => (
               (!isComingSoon || idx !== 0) && (
                 <Badge key={idx} className={badge.color}>
@@ -239,9 +248,9 @@ const VaultCard = ({ vault }) => {
         )}
       </p>
 
-      <div className="grid grid-cols-2 gap-3 border-t border-gray-50 pt-6 shrink-0 lg:flex lg:items-end lg:justify-between lg:gap-8">
+      <div className="grid w-full min-w-0 grid-cols-3 gap-3 border-t border-gray-50 pt-6 shrink-0">
         <Stat label="TVL Cap" value={vault.stats.tvlCap} disabled={isMuted} />
-        <Stat label="Covered Vault APY" value={vault.stats.coveredApy} disabled={isMuted} />
+        <Stat label="Covered Vault APY" value={coveredApyFromStats(vault.stats)} disabled={isMuted} />
         <Stat label="Base Vault APY (Morpho)" value={vault.stats.baseApy} disabled={isMuted} />
         <Stat 
           label="APY Boost" 
@@ -250,20 +259,38 @@ const VaultCard = ({ vault }) => {
           disabled={isMuted}
           icon={<Sparkles className={`w-4 h-4 ${isMuted ? 'text-gray-300' : 'text-green-500'}`} />} 
         />
-        <Stat label="Current TVL" value={vault.stats.currentTvl} disabled={isMuted} className="col-span-2 sm:col-span-1" />
+        <Stat label="Current TVL" value={vault.stats.currentTvl} disabled={isMuted} />
+        <Stat
+          label="CHAIN"
+          value={
+            <img
+              src={publicUrl('eth-logo-landscape-gray.png')}
+              alt="Ethereum"
+              className="block h-auto max-h-6 w-full max-w-full object-contain object-left"
+            />
+          }
+          valueMedia
+          disabled={isMuted}
+        />
       </div>
     </div>
   );
 };
 
-const Stat = ({ label, value, isPositive, disabled, icon, className = '' }) => (
-  <div className={`flex flex-col ${className}`}>
+const Stat = ({ label, value, isPositive, disabled, icon, className = '', valueMedia }) => (
+  <div className={`flex min-w-0 flex-col ${className}`}>
     <span className="text-[10px] uppercase tracking-wider text-gray-400 mb-1 font-sans font-medium">
       {label}
     </span>
-    <span className={`text-xl font-bold flex items-center gap-1 font-satoshi tracking-tight ${
-      disabled ? 'text-gray-400' : isPositive ? 'text-green-600' : 'text-gray-900'
-    }`}>
+    <span
+      className={
+        valueMedia
+          ? `flex min-w-0 max-w-full items-center gap-1 min-h-6 ${disabled ? 'opacity-50' : ''}`
+          : `text-xl font-bold flex items-center gap-1 font-satoshi tracking-tight ${
+              disabled ? 'text-gray-400' : isPositive ? 'text-green-600' : 'text-gray-900'
+            }`
+      }
+    >
       {value}
       {icon}
     </span>
@@ -384,9 +411,9 @@ const Navbar = () => {
           }}
           className="backdrop-blur-md rounded-[999px] px-6 md:px-10 py-4 flex justify-between items-center"
         >
-          <a href="/" className="flex items-center group cursor-pointer">
+          <Link to="/" className="flex items-center group cursor-pointer">
             <CatalysisNavbarLogo className="text-[#383737] group-hover:text-blue-600 transition-colors" />
-          </a>
+          </Link>
           {/* Desktop: links */}
           <div className="hidden md:flex items-center gap-10 text-sm font-medium text-gray-600 font-sans">
             {navLinks}
@@ -499,7 +526,11 @@ const Footer = () => (
             <h4 className="font-bold text-sm text-gray-900 mb-4 font-sans">Company</h4>
             <ul className="text-sm text-gray-500 space-y-3 font-sans">
               <li><a href="https://catalysis.network/contact-us" className="hover:text-blue-600 transition-colors">Contact Us</a></li>
-              <li><a href="https://catalysis.network/t-and-c" className="hover:text-blue-600 transition-colors">Terms & Conditions</a></li>
+              <li>
+                <Link to="/terms" className="hover:text-blue-600 transition-colors">
+                  Terms & Conditions
+                </Link>
+              </li>
             </ul>
           </div>
         </nav>
@@ -509,9 +540,34 @@ const Footer = () => (
 );
 
 /**
+ * COVERED VAULT TERMS (in-app)
+ */
+function TermsPage() {
+  return (
+    <div className="min-h-screen bg-[#F8FAFC] font-sans text-gray-900 flex flex-col">
+      <Navbar />
+      <main className="container mx-auto max-w-3xl px-6 flex-1 pb-20 pt-4">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-600 transition-colors mb-8 font-sans"
+        >
+          ← Back to Morpho Covered Vaults
+        </Link>
+        <iframe
+          title="Covered Vault Participation Terms and Conditions"
+          srcDoc={coveredVaultTermsHtml}
+          className="w-full min-h-[calc(100vh-8rem)] rounded-xl border border-gray-200 bg-white shadow-sm"
+        />
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+/**
  * MAIN APPLICATION COMPONENT
  */
-export default function App() {
+function Home() {
   const [vaults, setVaults] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -598,5 +654,16 @@ export default function App() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/terms" element={<TermsPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
