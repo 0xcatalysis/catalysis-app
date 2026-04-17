@@ -238,8 +238,8 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
     >
       <div className="relative z-10 flex h-full flex-col p-6 sm:p-7">
         <div className="mb-5 space-y-3 sm:mb-6">
-          <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-            <div className="flex min-w-0 w-full max-w-full items-center sm:min-w-0 sm:flex-1 sm:pr-2">
+          <div className="flex min-w-0 flex-row items-center justify-between gap-3 sm:gap-4">
+            <div className="flex min-w-0 flex-1 items-center pr-2">
               <div className="min-w-0 max-w-full rounded-lg border border-gray-100 bg-gray-50 p-2.5 transition-colors duration-300 group-hover:border-blue-100">
                 <img
                   src={vault.icon}
@@ -250,12 +250,17 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
             </div>
 
             <div
-              className={`flex w-fit max-w-full shrink-0 flex-col self-end sm:self-auto rounded-xl border border-gray-100 bg-gray-50/50 p-2 px-2.5 transition-all duration-300 sm:rounded-2xl sm:p-3 sm:px-4 ${isMuted ? 'opacity-40' : 'group-hover:bg-blue-50/40'}`}
+              className={`flex shrink-0 flex-col items-center justify-center rounded-xl border border-gray-100 bg-gray-50/50 p-2 transition-all duration-300 sm:items-end sm:rounded-2xl sm:p-3 sm:px-4 ${isMuted ? 'opacity-40' : 'group-hover:bg-blue-50/40'}`}
             >
+              <img
+                src={publicUrl('eth-logo-mobile.png')}
+                alt="Ethereum"
+                className="block h-7 w-auto object-contain sm:hidden"
+              />
               <img
                 src={publicUrl('eth-logo-landscape-gray.png')}
                 alt="Ethereum"
-                className="block h-4 w-auto max-w-[min(100%,7.5rem)] object-contain object-right sm:h-5 sm:max-w-[124px]"
+                className="hidden h-5 w-auto max-w-[124px] object-contain object-right sm:block"
               />
             </div>
           </div>
@@ -336,7 +341,7 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
           </div>
 
           <div
-            className={`mt-auto flex w-full min-w-0 flex-col gap-5 sm:flex-row sm:justify-between sm:gap-6 lg:gap-10 ${isMuted ? 'opacity-40' : ''}`}
+            className={`mt-auto flex w-full min-w-0 flex-row justify-between gap-4 sm:gap-6 lg:gap-10 ${isMuted ? 'opacity-40' : ''}`}
           >
             <div className="flex min-w-0 flex-1 flex-col gap-1">
               <span className="text-[11px] font-sans font-semibold tracking-wide text-[#041c64]/75 uppercase sm:text-xs">
