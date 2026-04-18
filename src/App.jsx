@@ -351,7 +351,7 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
             </div>
             <div className="flex min-w-0 flex-1 flex-col gap-1">
               <span className="text-[11px] font-sans font-semibold tracking-wide text-[#041c64]/75 uppercase sm:text-xs">
-                TVL cap
+                Coverage TVL cap
               </span>
               <span className="font-satoshi text-4xl font-bold tabular-nums tracking-tight text-[#041c64]">
                 {vault.stats.tvlCap}
@@ -363,14 +363,13 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
         <div className="mt-auto w-full min-w-0 border-t border-gray-50 pt-5 sm:pt-6">
           <div className="grid min-w-0 grid-cols-2 gap-x-4 gap-y-5 md:flex md:w-full md:flex-nowrap md:items-end md:justify-start md:gap-x-6 md:gap-y-0 lg:gap-x-8">
             <VaultCardV3StatItem label="Current TVL" value={vault.stats.currentTvl} disabled={isMuted} />
+            <VaultCardV3StatItem label="Cover duration" value={vault.stats.duration} disabled={isMuted} />
+            <VaultCardV3StatItem label="Morpho base APY" value={vault.stats.baseApy} disabled={isMuted} />
             <VaultCardV3StatItem
-              label="Boost"
-              value={vault.stats.apyBoost}
-              isPositive={!isMuted}
+              label="Morpho base TVL"
+              value={vault.stats.morphoBaseTvl ?? '—'}
               disabled={isMuted}
             />
-            <VaultCardV3StatItem label="Morpho base APY" value={vault.stats.baseApy} disabled={isMuted} />
-            <VaultCardV3StatItem label="Duration" value={vault.stats.duration} disabled={isMuted} />
           </div>
         </div>
       </div>
@@ -680,7 +679,7 @@ function Home() {
               stats: {
                 ...vault.stats,
                 ...(live.baseApy != null ? { baseApy: live.baseApy } : {}),
-                ...(live.currentTvl != null ? { currentTvl: live.currentTvl } : {}),
+                ...(live.currentTvl != null ? { morphoBaseTvl: live.currentTvl } : {}),
               },
             };
           } catch {
