@@ -6,6 +6,7 @@ import {
   Twitter, 
   Menu,
   X,
+  ChevronDown,
 } from 'lucide-react';
 import coveredVaultTermsHtml from './terms/covered-vault-terms.html?raw';
 import { fetchMorphoVaultBaseApyAndTvl } from './morphoApi.js';
@@ -134,6 +135,178 @@ const COMING_SOON_DATA = [
   { id: 'upshift', name: 'Upshift Vaults', href: 'https://www.upshift.finance/' },
   { id: 'midas', name: 'Midas Vaults', href: 'https://midas.app/' },
 ];
+
+const PROTECTION_BADGE_TOOLTIPS = {
+  10: 'Your principal is protected against vault losses up to 10% of vault TVL. Yield is not covered.',
+  15: 'Your principal is protected against vault losses up to 15% of vault TVL. Yield is not covered.',
+};
+
+function getProtectionBadgeTooltip(text) {
+  const m = String(text).trim().match(/^(\d+)%\s*Protection$/i);
+  if (!m) return undefined;
+  const pct = Number(m[1]);
+  return PROTECTION_BADGE_TOOLTIPS[pct];
+}
+
+function FaqItem({ num, question, children }) {
+  return (
+    <details className="group rounded-2xl border border-gray-100 bg-white p-6 shadow-sm open:shadow-md transition-shadow">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-sans font-semibold text-gray-900 [&::-webkit-details-marker]:hidden">
+        <span className="flex min-w-0 items-start gap-3">
+          <span className="shrink-0 pt-0.5 tabular-nums text-gray-400">{num}.</span>
+          <span className="min-w-0">{question}</span>
+        </span>
+        <ChevronDown
+          className="h-5 w-5 shrink-0 text-gray-400 transition-transform duration-200 group-open:rotate-180"
+          aria-hidden
+        />
+      </summary>
+      <div className="mt-5 space-y-4 text-sm leading-relaxed text-gray-600">{children}</div>
+    </details>
+  );
+}
+
+function FaqsSection() {
+  return (
+    <section className="mt-16 max-w-3xl" aria-labelledby="faqs-heading">
+      <h2 id="faqs-heading" className="mb-8 font-sans text-2xl font-bold text-gray-900">
+        FAQs
+      </h2>
+      <div className="space-y-4">
+        <FaqItem num={1} question={'What does "10% Protection" mean?'}>
+          <p>
+            The 10% protection label means your deposited principal is covered against vault losses up to 10% of the
+            vault&apos;s total TVL. Note: coverage applies to your principal only — accrued yield is not covered.
+          </p>
+          <p>
+            <strong>If the vault loses less than 10%</strong>, you&apos;re fully covered. For example: the vault has $100M and
+            suffers a $7M exploit (7% loss). A regular depositor with $1M in would withdraw $930K. As a covered vault
+            depositor, you still get your full $1M — the $70K shortfall is paid out as an insurance claim.
+          </p>
+          <p>
+            <strong>If the vault loses more than 10%</strong>, coverage is capped at 10%. For example: the same vault loses
+            $15M (15% loss). A regular depositor gets $850K. As a covered depositor, you get $950K — your $850K from the vault
+            plus a $100K insurance payout. Your actual loss is $150K, but you&apos;re compensated for up to $100K of it.
+          </p>
+          <p>
+            In short: 10% is the maximum vault-level loss percentage that Catalysis will compensate against. Losses within
+            that threshold are fully covered on your principal. Losses beyond it are partially covered up to that cap.
+          </p>
+        </FaqItem>
+
+        <FaqItem num={2} question="Why is Net Coverage Yield lower than the base vault APY?">
+          <p>
+            The difference is the coverage premium haircut — the cost of being protected. A small percentage of the base
+            vault&apos;s yield is deducted as a premium, paid into the coverage pool. What you see as Net Coverage Yield is
+            your return after that deduction.
+          </p>
+          <p className="font-satoshi text-[#041c64]">
+            Net Coverage Yield = Base Vault APY − Premium Haircut
+          </p>
+          <p>
+            The haircut is set dynamically by Catalysis&apos;s underwriting engine using real-time risk data from Credora
+            (vault rating, probability of shortfall loss, expected loss, etc.). For example, if the base vault yields 5% APY
+            and the haircut is 0.75%, your net APY is 4.25%. For highly-rated (A-rated) vaults, haircuts tend to be stable.
+          </p>
+        </FaqItem>
+
+        <FaqItem num={3} question={"What is the Coverage TVL Cap? What happens when it's full?"}>
+          <p>
+            The Coverage TVL Cap is the maximum aggregate deposits the Covered Vault will accept. It&apos;s determined by
+            the size of the{' '}
+            <a
+              href="https://docs.catalysis.network/docs/coverpools/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-blue-600 underline decoration-blue-600/30 underline-offset-2 transition-colors hover:text-blue-700 hover:decoration-blue-700"
+            >
+              CoverPool
+            </a>{' '}
+            — the dedicated pool of restaked capital that backs coverage — and the vault&apos;s tail-risk profile as assessed
+            by the Catalysis underwriting engine.
+          </p>
+          <p>
+            For example, if a vault&apos;s worst-case loss probability is 10%, then $1M in the{' '}
+            <a
+              href="https://docs.catalysis.network/docs/coverpools/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-blue-600 underline decoration-blue-600/30 underline-offset-2 transition-colors hover:text-blue-700 hover:decoration-blue-700"
+            >
+              CoverPool
+            </a>{' '}
+            can back up to $10M in the Covered Vault (a 10x ratio). The cap scales upward as more underwriting capital is
+            delegated to the{' '}
+            <a
+              href="https://docs.catalysis.network/docs/coverpools/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-blue-600 underline decoration-blue-600/30 underline-offset-2 transition-colors hover:text-blue-700 hover:decoration-blue-700"
+            >
+              CoverPool
+            </a>.
+          </p>
+          <p>
+            Once the cap is reached, no new deposits can enter the Covered Vault. Depositors already in the vault remain covered
+            and can withdraw at any time — there is no lock-up.
+          </p>
+        </FaqItem>
+
+        <FaqItem num={4} question={"What's the difference between the Covered Vault and the Base Vault?"}>
+          <p>
+            The Base Vault is the original underlying vault — same strategy, same TVL,
+            same APY, completely unchanged. The Covered Vault is a separate ERC4626-compliant contract deployed by Catalysis
+            that wraps the Base Vault with a protection layer.
+          </p>
+          <p>
+            Your deposit is routed 1:1 into the Base Vault, so yield exposure
+            is identical. The difference is that Covered Vault depositors pay a small premium haircut on their yield in exchange
+            for protection against principal loss. All coverage accounting — PPS tracking, shortfall calculations, premium
+            haircuts — happens at the Catalysis layer, not on Morpho. If you deposit directly into the Base Vault, there is no
+            protection.
+            <br /><br />
+            <a
+              href="https://docs.catalysis.network/docs/stakeholders/defi-vaults/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-blue-600 underline decoration-blue-600/30 underline-offset-2 transition-colors hover:text-blue-700 hover:decoration-blue-700"
+            >
+              Learn more →
+            </a>
+          </p>
+        </FaqItem>
+
+        <FaqItem num={5} question="What is the CREDORA A rating?">
+          <p>
+            <a
+              href="https://www.credora.network/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-blue-600 underline decoration-blue-600/30 underline-offset-2 transition-colors hover:text-blue-700 hover:decoration-blue-700"
+            >
+              Credora
+            </a>{' '}
+            is an onchain credit risk assessment provider. The CREDORA A rating{' '}
+            <a
+              href="https://docs.redstone.finance/docs/redstone-credora/value-proposition/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-blue-600 underline decoration-blue-600/30 underline-offset-2 transition-colors hover:text-blue-700 hover:decoration-blue-700"
+            >
+              reflects their evaluation
+            </a>{' '}
+            of the underlying vault&apos;s risk profile — factoring in things like counterparty risk, collateral quality, and
+            historical performance.
+          </p>
+          <p>
+            A higher Credora rating indicates lower assessed risk. Catalysis uses Credora ratings as one of the inputs when
+            setting coverage terms, including the protection percentage and premium.
+          </p>
+        </FaqItem>
+      </div>
+    </section>
+  );
+}
 
 /**
  * LOGO COMPONENTS
@@ -288,13 +461,22 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
                     const isComingSoonPill = badge.text.toLowerCase().includes('coming soon');
                     const nonPrimaryMuted = isMuted && !isComingSoonPill ? 'opacity-40' : '';
                     const pillSize = 'px-2.5 py-0.5 text-[9px] tracking-wide sm:text-[10px]';
-                    return (
+                    const protectionTooltip = getProtectionBadgeTooltip(badge.text);
+                    const pill = (
                       <VaultCardV2Badge
-                        key={idx}
                         className={`${vaultBadgeV2ClassName(badge.text)} ${pillSize} normal-case font-sans font-semibold tracking-wide ${nonPrimaryMuted} shrink-0`}
                       >
                         {badge.text}
                       </VaultCardV2Badge>
+                    );
+                    return (
+                      <span
+                        key={idx}
+                        className={`inline-flex shrink-0 ${protectionTooltip ? 'cursor-help' : ''}`}
+                        title={protectionTooltip}
+                      >
+                        {pill}
+                      </span>
                     );
                   })}
                 </div>
@@ -774,6 +956,7 @@ function Home() {
             </section>
           </>
         )}
+        <FaqsSection />
       </main>
 
       <Footer />
