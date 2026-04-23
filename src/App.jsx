@@ -6,6 +6,7 @@ import {
   Twitter, 
   Menu,
   X,
+  ChevronDown,
 } from 'lucide-react';
 import coveredVaultTermsHtml from './terms/covered-vault-terms.html?raw';
 import { fetchMorphoVaultBaseApyAndTvl } from './morphoApi.js';
@@ -134,6 +135,58 @@ const COMING_SOON_DATA = [
   { id: 'upshift', name: 'Upshift Vaults', href: 'https://www.upshift.finance/' },
   { id: 'midas', name: 'Midas Vaults', href: 'https://midas.app/' },
 ];
+
+const PROTECTION_BADGE_TOOLTIPS = {
+  10: 'Your principal is protected against vault losses up to 10% of vault TVL. Yield is not covered.',
+  15: 'Your principal is protected against vault losses up to 15% of vault TVL. Yield is not covered.',
+};
+
+function getProtectionBadgeTooltip(text) {
+  const m = String(text).trim().match(/^(\d+)%\s*Protection$/i);
+  if (!m) return undefined;
+  const pct = Number(m[1]);
+  return PROTECTION_BADGE_TOOLTIPS[pct];
+}
+
+function FaqsSection() {
+  return (
+    <section className="mt-16 max-w-3xl" aria-labelledby="faqs-heading">
+      <h2 id="faqs-heading" className="mb-8 font-sans text-2xl font-bold text-gray-900">
+        FAQs
+      </h2>
+      <details className="group rounded-2xl border border-gray-100 bg-white p-6 shadow-sm open:shadow-md transition-shadow">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-sans font-semibold text-gray-900 [&::-webkit-details-marker]:hidden">
+          <span className="min-w-0">What does &quot;10% Protection&quot; mean?</span>
+          <ChevronDown
+            className="h-5 w-5 shrink-0 text-gray-400 transition-transform duration-200 group-open:rotate-180"
+            aria-hidden
+          />
+        </summary>
+        <div className="mt-5 space-y-4 text-sm leading-relaxed text-gray-600">
+          <p>
+            The 10% protection label means your deposited principal is covered against vault losses up to 10% of the
+            vault&apos;s total TVL. Note: coverage applies to your principal only — accrued yield is not covered.
+          </p>
+          <p>
+            <strong>If the vault loses less than 10%</strong>, you&apos;re fully covered. For example: the vault has
+            $100M and suffers a $7M exploit (7% loss). A regular depositor with $1M in would withdraw $930K. As a covered
+            vault depositor, you still get your full $1M — the $70K shortfall is paid out as an insurance claim.
+          </p>
+          <p>
+            <strong>If the vault loses more than 10%</strong>, coverage is capped at 10%. For example: the same vault loses
+            $15M (15% loss). A regular depositor gets $850K. As a covered depositor, you get $950K — your $850K from the
+            vault plus a $100K insurance payout. Your actual loss is $150K, but you&apos;re compensated for up to $100K of
+            it.
+          </p>
+          <p>
+            In short: 10% is the maximum vault-level loss percentage that Catalysis will compensate against. Losses within
+            that threshold are fully covered on your principal. Losses beyond it are partially covered up to that cap.
+          </p>
+        </div>
+      </details>
+    </section>
+  );
+}
 
 /**
  * LOGO COMPONENTS
@@ -288,13 +341,22 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
                     const isComingSoonPill = badge.text.toLowerCase().includes('coming soon');
                     const nonPrimaryMuted = isMuted && !isComingSoonPill ? 'opacity-40' : '';
                     const pillSize = 'px-2.5 py-0.5 text-[9px] tracking-wide sm:text-[10px]';
-                    return (
+                    const protectionTooltip = getProtectionBadgeTooltip(badge.text);
+                    const pill = (
                       <VaultCardV2Badge
-                        key={idx}
                         className={`${vaultBadgeV2ClassName(badge.text)} ${pillSize} normal-case font-sans font-semibold tracking-wide ${nonPrimaryMuted} shrink-0`}
                       >
                         {badge.text}
                       </VaultCardV2Badge>
+                    );
+                    return (
+                      <span
+                        key={idx}
+                        className={`inline-flex shrink-0 ${protectionTooltip ? 'cursor-help' : ''}`}
+                        title={protectionTooltip}
+                      >
+                        {pill}
+                      </span>
                     );
                   })}
                 </div>
@@ -774,6 +836,7 @@ function Home() {
             </section>
           </>
         )}
+        <FaqsSection />
       </main>
 
       <Footer />
