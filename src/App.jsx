@@ -28,7 +28,7 @@ const MOCK_VAULTS = [
   {
     id: 1,
     name: "Gauntlet WETH Prime",
-    description: "This is a covered version of the Gauntlet WETH Prime v1 vault on Morpho. The Gauntlet WETH Prime vault aims to optimize for risk-adjusted yield across liquid staking recursive yield markets.",
+    description: "This is a covered version of the Gauntlet WETH Prime v1 vault on Morpho. The vault aims to optimize for risk-adjusted yield across liquid staking recursive yield markets.",
     icon: publicUrl('gauntlet-logo-full-dark.svg'),
     badges: [
       { text: "Credora A", color: "bg-blue-50 text-blue-600" },
@@ -52,8 +52,8 @@ const MOCK_VAULTS = [
   },
   {
     id: 2,
-    name: "KPK ETH Prime",
-    description: "This is a covered version of the ETH Prime Vault on Morpho. The KPK ETH Prime is a low-risk ETH vault with 24h automation. Allocations are continuously rebalanced across liquid markets with strict collateral filters in place to preserve liquidity and mitigate risk.",
+    name: "KPK ETH Prime v2",
+    description: "This is a covered version of the KPK ETH Prime v2 Vault on Morpho. A low-risk ETH vault with 24h automation. Allocations are continuously rebalanced across liquid markets with strict collateral filters in place to preserve liquidity and mitigate risk.",
     icon: publicUrl('kpk-logo.png'),
     isComingSoon: true,
     badges: [
@@ -70,11 +70,11 @@ const MOCK_VAULTS = [
       duration: "3 months"
     },
     morpho: {
-      address: '0xd564F765F9aD3E7d2d6cA782100795a885e8e7C8',
+      address: '0xBb50A5341368751024ddf33385BA8cf61fE65FF9',
       chainId: 1
     },
     status: "inactive",
-    moreInfoUrl: "https://app.morpho.org/ethereum/vault/0xd564F765F9aD3E7d2d6cA782100795a885e8e7C8/kpk-eth-prime"
+    moreInfoUrl: "https://app.morpho.org/ethereum/vault/0xBb50A5341368751024ddf33385BA8cf61fE65FF9/kpk-eth-prime-v2"
   },
   {
     id: 3,
@@ -130,11 +130,12 @@ const MOCK_VAULTS = [
   }
 ];
 
-const COMING_SOON_DATA = [
-  { id: 'nest', name: 'Nest Credit Vaults', href: 'https://nest.credit/' },
-  { id: 'upshift', name: 'Upshift Vaults', href: 'https://www.upshift.finance/' },
-  { id: 'midas', name: 'Midas Vaults', href: 'https://midas.app/' },
-];
+// const COMING_SOON_DATA = [
+//   { id: 'nest', name: 'Nest Credit Vaults', href: 'https://nest.credit/' },
+//   { id: 'upshift', name: 'Upshift Vaults', href: 'https://www.upshift.finance/' },
+//   { id: 'midas', name: 'Midas Vaults', href: 'https://midas.app/' },
+// ];
+const COMING_SOON_DATA = [];
 
 const PROTECTION_BADGE_TOOLTIPS = {
   10: 'Your principal is protected against vault losses up to 10% of vault TVL. Yield is not covered.',
@@ -923,14 +924,16 @@ function Home() {
                 <VaultCardSkeleton key={i} />
               ))}
             </div>
-            <section className="mt-16">
-              <Skeleton className="h-8 w-40 mb-8" />
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[1, 2, 3].map((i) => (
-                  <ComingSoonMiniCardSkeleton key={i} />
-                ))}
-              </div>
-            </section>
+            {COMING_SOON_DATA.length > 0 && (
+              <section className="mt-16">
+                <Skeleton className="h-8 w-40 mb-8" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[1, 2, 3].map((i) => (
+                    <ComingSoonMiniCardSkeleton key={i} />
+                  ))}
+                </div>
+              </section>
+            )}
           </>
         ) : (
           <>
@@ -940,20 +943,22 @@ function Home() {
               ))}
             </div>
 
-            <section className="mt-16">
+            {COMING_SOON_DATA.length > 0 && (
+              <section className="mt-16">
                 <h2 className="text-2xl font-bold text-gray-900 mb-8 font-sans">Coming Soon</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {COMING_SOON_DATA.map((item, i) => (
-                        <ComingSoonMiniCard
-                          key={item.id}
-                          name={item.name}
-                          id={item.id}
-                          href={item.href}
-                          appearStagger={i + 4}
-                        />
-                    ))}
+                  {COMING_SOON_DATA.map((item, i) => (
+                    <ComingSoonMiniCard
+                      key={item.id}
+                      name={item.name}
+                      id={item.id}
+                      href={item.href}
+                      appearStagger={i + 4}
+                    />
+                  ))}
                 </div>
-            </section>
+              </section>
+            )}
           </>
         )}
         <FaqsSection />
