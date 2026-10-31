@@ -62,7 +62,7 @@ const MOCK_VAULTS = [
     stats: {
       tvlCap: "$0M",
       baseApy: "0.0%",
-      haircut: 0,
+      haircut: 0.37,
       apyBoost: "+0.75%",
       currentTvl: "$2.1M",
       duration: "3 months"
@@ -86,7 +86,7 @@ const MOCK_VAULTS = [
     stats: {
       tvlCap: "$0M",
       baseApy: "0.0%",
-      haircut: 0,
+      haircut: 0.34,
       apyBoost: "+0.75%",
       currentTvl: "$3.2M",
       duration: "3 months"
@@ -110,7 +110,7 @@ const MOCK_VAULTS = [
     stats: {
       tvlCap: "$0M",
       baseApy: "0.0%",
-      haircut: 0,
+      haircut: 0.29,
       apyBoost: "+0.75%",
       currentTvl: "$1.2M",
       duration: "3 months"
@@ -543,7 +543,7 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
         </div>
 
         <div className="mt-auto w-full min-w-0 border-t border-gray-50 pt-5 sm:pt-6">
-          <div className="grid min-w-0 grid-cols-2 gap-x-4 gap-y-5 md:flex md:w-full md:flex-nowrap md:items-end md:justify-start md:gap-x-6 md:gap-y-0 lg:gap-x-8">
+          <div className="grid min-w-0 grid-cols-2 gap-x-4 gap-y-5 xl:flex xl:w-full xl:flex-nowrap xl:items-end xl:justify-start xl:gap-x-8 xl:gap-y-0">
             <VaultCardV3StatItem label="Current TVL" value={vault.stats.currentTvl} disabled={isMuted} />
             <VaultCardV3StatItem label="Cover duration" value={vault.stats.duration} disabled={isMuted} />
             <VaultCardV3StatItem label="Morpho APY" value={vault.stats.baseApy} disabled={isMuted} />
@@ -736,14 +736,14 @@ const FooterLogo = () => (
 const Footer = () => (
   <footer className="mt-auto w-full bg-white relative overflow-visible">
     {/* Background watermark - matches Figma footer */}
-    <div className="absolute inset-0 flex items-end justify-center select-none pointer-events-none overflow-visible min-h-[343px]">
-      <div className="w-full max-w-[1440px] px-6 pb-0">
+    <div className="absolute inset-0 flex items-end justify-center select-none pointer-events-none overflow-visible min-h-[21.4375rem]">
+      <div className="w-full max-w-[90rem] px-6 pb-0">
         <FooterLogo />
       </div>
     </div>
 
     {/* Content - 1440 Fill x 343 Hug per Figma */}
-    <div className="relative z-10 w-full max-w-[1440px] mx-auto px-14 pb-14 pt-6 flex flex-col justify-center">
+    <div className="relative z-10 w-full max-w-[90rem] mx-auto px-14 pb-14 pt-6 flex flex-col justify-center">
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-12 md:gap-16">
         {/* Left: Logo + social */}
         <div className="flex flex-col gap-6">
@@ -896,7 +896,7 @@ function Home() {
     <div className="catalysis-app-surface min-h-screen font-sans text-gray-900 flex flex-col">
       <Navbar />
 
-      <main className="mx-auto w-full max-w-[1440px] px-6 sm:px-8 lg:px-10 flex-1 pb-20">
+      <main className="mx-auto w-full max-w-[90rem] px-6 sm:px-8 lg:px-10 flex-1 pb-20">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 rounded-lg overflow-hidden shadow-lg shadow-blue-500/20 shrink-0 ring-1 ring-black/5">
             <img

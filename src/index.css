@@ -117,20 +117,11 @@
 }
 
 @layer base {
-  /* Everything is sized in rem, so raising the root size zooms the whole page
-     evenly. Percentages keep respecting the reader's own browser font setting. */
+  /* Everything is sized in rem, so the root size acts as a page-wide zoom.
+     It grows smoothly with screen width: 16px on phones and small tablets,
+     about 20px at 1440px wide, capped at 24px on very large screens. */
   html {
-    font-size: 100%;
-  }
-  @media (min-width: 768px) {
-    html {
-      font-size: 112.5%;
-    }
-  }
-  @media (min-width: 1536px) {
-    html {
-      font-size: 125%;
-    }
+    font-size: clamp(100%, calc(0.625rem + 0.7vw), 150%);
   }
   * {
     @apply border-border outline-ring/50;
