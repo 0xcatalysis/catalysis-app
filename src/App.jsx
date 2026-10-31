@@ -365,7 +365,7 @@ function vaultBadgeV2ClassName(text) {
 
 const VaultCardV2Badge = ({ children, className = '' }) => (
   <span
-    className={`rounded-md border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap ${className}`}
+    className={`rounded-md border px-2.5 py-0.5 text-[0.625rem] font-bold uppercase tracking-wider whitespace-nowrap ${className}`}
   >
     {children}
   </span>
@@ -375,7 +375,7 @@ const VaultCardV2Badge = ({ children, className = '' }) => (
 
 const VaultCardV3StatItem = ({ label, value, icon, isPositive, disabled, className = '' }) => (
   <div className={`flex h-full min-w-0 flex-col ${disabled ? 'opacity-40' : ''} ${className}`.trim()}>
-    <span className="mb-1 text-[10px] font-sans font-medium tracking-wider text-gray-400 uppercase">
+    <span className="mb-1 text-[0.625rem] font-sans font-medium tracking-wider text-gray-400 uppercase">
       {label}
     </span>
     <div className="mt-auto flex min-h-[1.375rem] min-w-0 items-end gap-1.5 pt-0.5">
@@ -428,7 +428,7 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
               <img
                 src={publicUrl('eth-logo-landscape-gray.png')}
                 alt="Ethereum"
-                className="hidden h-5 w-auto max-w-[124px] object-contain object-right sm:block"
+                className="hidden h-5 w-auto max-w-[7.75rem] object-contain object-right sm:block"
               />
             </div>
           </div>
@@ -445,7 +445,7 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
             >
               {isComingSoon && (
                 <VaultCardV2Badge
-                  className={`${vaultBadgeV2ClassName(vault.badges[0].text)} shrink-0 px-2.5 py-0.5 text-[9px] font-sans font-semibold tracking-wide normal-case sm:text-[10px]`}
+                  className={`${vaultBadgeV2ClassName(vault.badges[0].text)} shrink-0 px-2.5 py-0.5 text-[0.5625rem] font-sans font-semibold tracking-wide normal-case sm:text-[0.625rem]`}
                 >
                   {vault.badges[0].text}
                 </VaultCardV2Badge>
@@ -455,7 +455,7 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
                   {otherBadges.map((badge, idx) => {
                     const isComingSoonPill = badge.text.toLowerCase().includes('coming soon');
                     const nonPrimaryMuted = isMuted && !isComingSoonPill ? 'opacity-40' : '';
-                    const pillSize = 'px-2.5 py-0.5 text-[9px] tracking-wide sm:text-[10px]';
+                    const pillSize = 'px-2.5 py-0.5 text-[0.5625rem] tracking-wide sm:text-[0.625rem]';
                     const protectionTooltip = getProtectionBadgeTooltip(badge.text);
                     const pill = (
                       <VaultCardV2Badge
@@ -521,7 +521,7 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
             className={`mt-auto flex w-full min-w-0 flex-row justify-between gap-4 sm:gap-6 lg:gap-10 ${isMuted ? 'opacity-40' : ''}`}
           >
             <div className="flex min-w-0 flex-1 flex-col gap-1">
-              <span className="text-[11px] font-sans font-semibold tracking-wide text-[#041c64]/75 uppercase sm:text-xs">
+              <span className="text-[0.6875rem] font-sans font-semibold tracking-wide text-[#041c64]/75 uppercase sm:text-xs">
                 Net coverage yield
               </span>
               <div className="flex items-baseline gap-1">
@@ -532,7 +532,7 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
               </div>
             </div>
             <div className="flex min-w-0 flex-1 flex-col gap-1">
-              <span className="text-[11px] font-sans font-semibold tracking-wide text-[#041c64]/75 uppercase sm:text-xs">
+              <span className="text-[0.6875rem] font-sans font-semibold tracking-wide text-[#041c64]/75 uppercase sm:text-xs">
                 Coverage TVL cap
               </span>
               <span className="font-satoshi text-4xl font-bold tabular-nums tracking-tight text-[#041c64]">

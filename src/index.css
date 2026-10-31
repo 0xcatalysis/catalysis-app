@@ -117,6 +117,21 @@
 }
 
 @layer base {
+  /* Everything is sized in rem, so raising the root size zooms the whole page
+     evenly. Percentages keep respecting the reader's own browser font setting. */
+  html {
+    font-size: 100%;
+  }
+  @media (min-width: 768px) {
+    html {
+      font-size: 112.5%;
+    }
+  }
+  @media (min-width: 1536px) {
+    html {
+      font-size: 125%;
+    }
+  }
   * {
     @apply border-border outline-ring/50;
     }
