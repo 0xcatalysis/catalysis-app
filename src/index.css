@@ -117,12 +117,6 @@
 }
 
 @layer base {
-  /* Everything is sized in rem, so the root size acts as a page-wide zoom.
-     It grows smoothly with screen width: 16px on phones and small tablets,
-     about 20px at 1440px wide, capped at 24px on very large screens. */
-  html {
-    font-size: clamp(100%, calc(0.625rem + 0.7vw), 150%);
-  }
   * {
     @apply border-border outline-ring/50;
     }

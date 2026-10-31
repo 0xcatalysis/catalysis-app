@@ -60,7 +60,7 @@ const MOCK_VAULTS = [
       { text: "10% Protection", color: "bg-[#1E293B] text-white" }
     ],
     stats: {
-      tvlCap: "$0M",
+      tvlCap: "$4M",
       baseApy: "0.0%",
       haircut: 0.37,
       apyBoost: "+0.75%",
@@ -84,7 +84,7 @@ const MOCK_VAULTS = [
       { text: "10% Protection", color: "bg-[#1E293B] text-white" }
     ],
     stats: {
-      tvlCap: "$0M",
+      tvlCap: "$3.5M",
       baseApy: "0.0%",
       haircut: 0.34,
       apyBoost: "+0.75%",
@@ -108,7 +108,7 @@ const MOCK_VAULTS = [
       { text: "10% Protection", color: "bg-[#1E293B] text-white" }
     ],
     stats: {
-      tvlCap: "$0M",
+      tvlCap: "$4.5M",
       baseApy: "0.0%",
       haircut: 0.29,
       apyBoost: "+0.75%",
@@ -896,7 +896,7 @@ function Home() {
     <div className="catalysis-app-surface min-h-screen font-sans text-gray-900 flex flex-col">
       <Navbar />
 
-      <main className="mx-auto w-full max-w-[90rem] px-6 sm:px-8 lg:px-10 flex-1 pb-20">
+      <main className="mx-auto w-full max-w-[66rem] px-4 flex-1 pb-20">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 rounded-lg overflow-hidden shadow-lg shadow-blue-500/20 shrink-0 ring-1 ring-black/5">
             <img
