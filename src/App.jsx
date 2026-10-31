@@ -913,7 +913,7 @@ function Home() {
 
         {loading ? (
           <>
-            <div className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-5 lg:mb-20 lg:gap-6">
+            <div className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-5 lg:mb-20 lg:w-[64rem] lg:gap-6 lg:[zoom:0.75]">
               {[1, 2, 3, 4].map((i) => (
                 <VaultCardSkeleton key={i} />
               ))}
@@ -931,7 +931,7 @@ function Home() {
           </>
         ) : (
           <>
-            <div className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-5 lg:mb-20 lg:gap-6">
+            <div className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-5 lg:mb-20 lg:w-[64rem] lg:gap-6 lg:[zoom:0.75]">
               {sortedVaults.map((vault, i) => (
                 <VaultCardV3 key={vault.id} vault={vault} appearStagger={i} />
               ))}
