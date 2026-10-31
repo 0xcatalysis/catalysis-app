@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter, Routes, Route, Link, useLocation, useNavigationType } from 'react-router-dom';
 import { 
   ExternalLink, 
   Github, 
-  Twitter, 
   Menu,
   X,
   ChevronDown,
@@ -145,29 +144,28 @@ function getProtectionBadgeTooltip(text) {
 
 function FaqItem({ num, question, children }) {
   return (
-    <details className="group rounded-2xl border border-gray-100 bg-white p-6 shadow-sm open:shadow-md transition-shadow">
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-sans font-semibold text-gray-900 [&::-webkit-details-marker]:hidden">
-        <span className="flex min-w-0 items-start gap-3">
-          <span className="shrink-0 pt-0.5 tabular-nums text-gray-400">{num}.</span>
-          <span className="min-w-0">{question}</span>
+    <details className="group rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow open:shadow-md hover:shadow-md lg:rounded-xl">
+      <summary className="flex cursor-pointer list-none items-start gap-2.5 rounded-2xl px-4 py-3.5 font-sans text-[15px] font-semibold leading-snug text-gray-900 outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 lg:rounded-xl lg:px-5 lg:py-3 lg:text-sm [&::-webkit-details-marker]:hidden">
+        <span className="w-5 shrink-0 tabular-nums text-gray-400">{num}.</span>
+        <span className="min-w-0 flex-1">{question}</span>
+        <span className="flex h-[1lh] shrink-0 items-center" aria-hidden>
+          <ChevronDown className="h-4 w-4 text-gray-400 transition-[transform,color] duration-200 group-hover:text-gray-600 group-open:rotate-180" />
         </span>
-        <ChevronDown
-          className="h-5 w-5 shrink-0 text-gray-400 transition-transform duration-200 group-open:rotate-180"
-          aria-hidden
-        />
       </summary>
-      <div className="mt-5 space-y-4 text-sm leading-relaxed text-gray-600">{children}</div>
+      <div className="space-y-3 px-4 pb-4 pt-0.5 text-sm leading-relaxed text-gray-600 lg:space-y-2.5 lg:pb-4 lg:pl-[3.125rem] lg:pr-11 lg:text-[13px]">
+        {children}
+      </div>
     </details>
   );
 }
 
 function FaqsSection() {
   return (
-    <section className="mt-16 max-w-3xl" aria-labelledby="faqs-heading">
-      <h2 id="faqs-heading" className="mb-8 font-sans text-2xl font-bold text-gray-900">
+    <section className="mt-12 max-w-3xl lg:mt-10" aria-labelledby="faqs-heading">
+      <h2 id="faqs-heading" className="mb-5 font-sans text-xl font-bold text-gray-900 lg:mb-4 lg:text-lg">
         FAQs
       </h2>
-      <div className="space-y-4">
+      <div className="space-y-3 lg:space-y-2.5">
         <FaqItem num={1} question={'What does "10% Protection" mean?'}>
           <p>
             The 10% protection label means your deposited principal is covered against vault losses up to 10% of the
@@ -195,7 +193,7 @@ function FaqsSection() {
             vault&apos;s yield is deducted as a premium, paid into the coverage pool. What you see as Net Coverage Yield is
             your return after that deduction.
           </p>
-          <p className="font-satoshi text-[#041c64]">
+          <p className="rounded-lg bg-slate-50 px-3 py-2 font-satoshi font-medium text-[#041c64]">
             Net Coverage Yield = Base Vault APY − Premium Haircut
           </p>
           <p>
@@ -363,9 +361,22 @@ function vaultBadgeV2ClassName(text) {
   return 'bg-blue-50 text-blue-700 border-blue-100';
 }
 
+/**
+ * Vault card sizing. One column (phones) uses the roomy base sizes; from `sm` up the grid is
+ * two columns (~300–490px cards, 374px on desktop) and switches to the compact scale.
+ * Shared by the real card and its skeleton so the loading grid matches the loaded one.
+ */
+const VAULT_CARD_SHELL = 'flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white';
+const VAULT_CARD_PAD = 'p-6 sm:p-5';
+const VAULT_CARD_HEADER = 'mb-5 space-y-3 sm:mb-4 sm:space-y-2.5';
+const VAULT_CARD_BODY = 'mb-6 flex flex-1 flex-col gap-6 sm:mb-4 sm:gap-4';
+const VAULT_CARD_PAIR = 'flex w-full min-w-0 flex-row justify-between gap-4 sm:gap-5';
+const VAULT_CARD_STATS = 'grid min-w-0 grid-cols-2 gap-x-4 gap-y-5 sm:gap-x-5 sm:gap-y-3';
+const VAULT_CARD_FOOT = 'mt-auto w-full min-w-0 border-t border-gray-50 pt-5 sm:pt-4';
+
 const VaultCardV2Badge = ({ children, className = '' }) => (
   <span
-    className={`rounded-md border px-2.5 py-0.5 text-[0.625rem] font-bold uppercase tracking-wider whitespace-nowrap ${className}`}
+    className={`rounded-md border px-2 py-0.5 font-sans text-[0.6875rem] font-semibold leading-4 uppercase tracking-wider whitespace-nowrap ${className}`}
   >
     {children}
   </span>
@@ -375,12 +386,12 @@ const VaultCardV2Badge = ({ children, className = '' }) => (
 
 const VaultCardV3StatItem = ({ label, value, icon, isPositive, disabled, className = '' }) => (
   <div className={`flex h-full min-w-0 flex-col ${disabled ? 'opacity-40' : ''} ${className}`.trim()}>
-    <span className="mb-1 text-[0.625rem] font-sans font-medium tracking-wider text-gray-400 uppercase">
+    <span className="mb-1 font-sans text-xs font-medium tracking-wider text-gray-400 uppercase sm:mb-0.5 sm:text-[0.6875rem]">
       {label}
     </span>
     <div className="mt-auto flex min-h-[1.375rem] min-w-0 items-end gap-1.5 pt-0.5">
       <span
-        className={`truncate font-satoshi text-xl font-bold tabular-nums tracking-tight ${isPositive ? 'text-blue-600' : 'text-[#041c64]'}`}
+        className={`truncate font-satoshi text-xl font-bold tabular-nums tracking-tight sm:text-[1.0625rem] ${isPositive ? 'text-blue-600' : 'text-[#041c64]'}`}
       >
         {value}
       </span>
@@ -398,27 +409,27 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
 
   return (
     <div
-      className={`group catalysis-card-shell catalysis-card-enter relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white transition-shadow duration-300 ${isMuted ? 'opacity-80' : 'hover:shadow-md hover:border-gray-200/90 hover:ring-1 hover:ring-blue-100/70'}`.trim()}
+      className={`group catalysis-card-shell catalysis-card-enter relative ${VAULT_CARD_SHELL} transition-shadow duration-300 ${isMuted ? 'opacity-80' : 'hover:shadow-md hover:border-gray-200/90 hover:ring-1 hover:ring-blue-100/70'}`.trim()}
       style={{
         '--card-stagger': appearStagger,
         boxShadow: '0 4px 20px -4px rgba(0,0,0,0.05)',
       }}
     >
-      <div className="relative z-10 flex h-full flex-col p-6 sm:p-7">
-        <div className="mb-5 space-y-3 sm:mb-6">
-          <div className="flex min-w-0 flex-row items-center justify-between gap-3 sm:gap-4">
+      <div className={`relative z-10 flex h-full flex-col ${VAULT_CARD_PAD}`}>
+        <div className={VAULT_CARD_HEADER}>
+          <div className="flex min-w-0 flex-row items-center justify-between gap-3">
             <div className="flex min-w-0 flex-1 items-center pr-2">
-              <div className="min-w-0 max-w-full rounded-lg border border-gray-100 bg-gray-50 p-2.5 transition-colors duration-300 group-hover:border-blue-100">
+              <div className="min-w-0 max-w-full rounded-lg border border-gray-100 bg-gray-50 p-2.5 transition-colors duration-300 group-hover:border-blue-100 sm:p-2">
                 <img
                   src={vault.icon}
                   alt=""
-                  className={`h-9 max-h-9 w-auto max-w-full object-contain object-left ${isMuted ? 'grayscale opacity-40' : ''}`}
+                  className={`h-9 max-h-9 w-auto max-w-full object-contain object-left sm:h-7 sm:max-h-7 ${isMuted ? 'grayscale opacity-40' : ''}`}
                 />
               </div>
             </div>
 
             <div
-              className={`flex shrink-0 flex-col items-center justify-center rounded-xl border border-gray-100 bg-gray-50/50 p-2 transition-all duration-300 sm:items-end sm:rounded-2xl sm:p-3 sm:px-4 ${isMuted ? 'opacity-40' : 'group-hover:bg-blue-50/40'}`}
+              className={`flex shrink-0 flex-col items-center justify-center rounded-xl border border-gray-100 bg-gray-50/50 p-2 transition-all duration-300 sm:self-stretch sm:rounded-lg sm:px-3 sm:py-0 ${isMuted ? 'opacity-40' : 'group-hover:bg-blue-50/40'}`}
             >
               <img
                 src={publicUrl('eth-logo-mobile.png')}
@@ -428,14 +439,14 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
               <img
                 src={publicUrl('eth-logo-landscape-gray.png')}
                 alt="Ethereum"
-                className="hidden h-5 w-auto max-w-[7.75rem] object-contain object-right sm:block"
+                className="hidden h-5 w-auto max-w-[7.75rem] object-contain sm:block"
               />
             </div>
           </div>
 
           {(isComingSoon || otherBadges.length > 0) && (
             <div
-              className={`flex w-full min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+              className={`flex w-full min-w-0 flex-wrap items-center gap-x-2 gap-y-1.5 ${
                 isComingSoon && otherBadges.length > 0
                   ? 'justify-between'
                   : isComingSoon
@@ -444,22 +455,19 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
               }`}
             >
               {isComingSoon && (
-                <VaultCardV2Badge
-                  className={`${vaultBadgeV2ClassName(vault.badges[0].text)} shrink-0 px-2.5 py-0.5 text-[0.5625rem] font-sans font-semibold tracking-wide normal-case sm:text-[0.625rem]`}
-                >
+                <VaultCardV2Badge className={`${vaultBadgeV2ClassName(vault.badges[0].text)} shrink-0`}>
                   {vault.badges[0].text}
                 </VaultCardV2Badge>
               )}
               {otherBadges.length > 0 && (
-                <div className="flex min-w-0 flex-wrap items-center justify-end gap-1.5 sm:gap-2">
+                <div className="flex min-w-0 flex-wrap items-center justify-end gap-1.5">
                   {otherBadges.map((badge, idx) => {
                     const isComingSoonPill = badge.text.toLowerCase().includes('coming soon');
                     const nonPrimaryMuted = isMuted && !isComingSoonPill ? 'opacity-40' : '';
-                    const pillSize = 'px-2.5 py-0.5 text-[0.5625rem] tracking-wide sm:text-[0.625rem]';
                     const protectionTooltip = getProtectionBadgeTooltip(badge.text);
                     const pill = (
                       <VaultCardV2Badge
-                        className={`${vaultBadgeV2ClassName(badge.text)} ${pillSize} normal-case font-sans font-semibold tracking-wide ${nonPrimaryMuted} shrink-0`}
+                        className={`${vaultBadgeV2ClassName(badge.text)} ${nonPrimaryMuted} shrink-0`}
                       >
                         {badge.text}
                       </VaultCardV2Badge>
@@ -480,10 +488,10 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
           )}
         </div>
 
-        <div className="mb-6 flex flex-1 flex-col gap-6 sm:mb-8">
+        <div className={VAULT_CARD_BODY}>
           <div className="min-w-0 w-full">
             <h3
-              className={`mb-3 font-satoshi text-2xl font-bold tracking-tight leading-tight ${isMuted ? 'text-gray-400' : 'text-[#041c64]'}`}
+              className={`mb-3 font-satoshi text-2xl font-bold tracking-tight leading-tight sm:mb-2 sm:text-xl ${isMuted ? 'text-gray-400' : 'text-[#041c64]'}`}
             >
               {vault.titleUrl ? (
                 <a
@@ -499,51 +507,49 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
                 vault.name
               )}
             </h3>
-            <p className={`text-sm leading-relaxed font-medium ${isMuted ? 'text-gray-300' : 'text-gray-500'}`}>
+            <p className={`text-sm leading-relaxed font-medium sm:text-xs sm:leading-[1.6] ${isMuted ? 'text-gray-300' : 'text-gray-500'}`}>
               {vault.description}{' '}
               {vault.moreInfoUrl ? (
                 <a
                   href={vault.moreInfoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`inline-flex align-baseline ${isMuted ? 'text-gray-300 hover:text-gray-400' : 'text-gray-400 hover:text-blue-600'} transition-colors`}
+                  className={`inline-block rounded-sm align-[-0.0625em] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${isMuted ? 'text-gray-300 hover:text-gray-400' : 'text-gray-400 hover:text-blue-600'} transition-colors`}
                   aria-label={`View ${vault.name} on Morpho (opens in a new tab)`}
                 >
-                  <ExternalLink className="inline-block h-3 w-3" />
+                  <ExternalLink className="block h-3.5 w-3.5 sm:h-3 sm:w-3" />
                 </a>
               ) : (
-                <ExternalLink className={`ml-0.5 inline-block h-3 w-3 ${isMuted ? 'text-gray-300' : 'text-gray-400'}`} aria-hidden />
+                <ExternalLink className={`ml-0.5 inline-block h-3.5 w-3.5 align-[-0.0625em] sm:h-3 sm:w-3 ${isMuted ? 'text-gray-300' : 'text-gray-400'}`} aria-hidden />
               )}
             </p>
           </div>
 
-          <div
-            className={`mt-auto flex w-full min-w-0 flex-row justify-between gap-4 sm:gap-6 lg:gap-10 ${isMuted ? 'opacity-40' : ''}`}
-          >
+          <div className={`mt-auto ${VAULT_CARD_PAIR} ${isMuted ? 'opacity-40' : ''}`}>
             <div className="flex min-w-0 flex-1 flex-col gap-1">
-              <span className="text-[0.6875rem] font-sans font-semibold tracking-wide text-[#041c64]/75 uppercase sm:text-xs">
+              <span className="font-sans text-xs font-semibold tracking-wide text-[#041c64]/75 uppercase sm:text-[0.6875rem]">
                 Net coverage yield
               </span>
-              <div className="flex items-baseline gap-1">
-                <span className="font-satoshi text-4xl font-bold tracking-tight text-[#041c64]">
+              <div className="mt-auto flex items-baseline gap-1">
+                <span className="font-satoshi text-4xl font-bold tabular-nums tracking-tight text-[#041c64] sm:text-[1.75rem]">
                   {vault.status === 'inactive' ? '0.00%' : coveredApyFromStats(vault.stats)}
                 </span>
-                <span className="text-sm font-bold text-blue-500">APY</span>
+                <span className="text-sm font-bold text-blue-500 sm:text-xs">APY</span>
               </div>
             </div>
             <div className="flex min-w-0 flex-1 flex-col gap-1">
-              <span className="text-[0.6875rem] font-sans font-semibold tracking-wide text-[#041c64]/75 uppercase sm:text-xs">
+              <span className="font-sans text-xs font-semibold tracking-wide text-[#041c64]/75 uppercase sm:text-[0.6875rem]">
                 Coverage TVL cap
               </span>
-              <span className="font-satoshi text-4xl font-bold tabular-nums tracking-tight text-[#041c64]">
+              <span className="mt-auto font-satoshi text-4xl font-bold tabular-nums tracking-tight text-[#041c64] sm:text-[1.75rem]">
                 {vault.stats.tvlCap}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="mt-auto w-full min-w-0 border-t border-gray-50 pt-5 sm:pt-6">
-          <div className="grid min-w-0 grid-cols-2 gap-x-4 gap-y-5 xl:flex xl:w-full xl:flex-nowrap xl:items-end xl:justify-start xl:gap-x-8 xl:gap-y-0">
+        <div className={VAULT_CARD_FOOT}>
+          <div className={VAULT_CARD_STATS}>
             <VaultCardV3StatItem label="Current TVL" value={vault.stats.currentTvl} disabled={isMuted} />
             <VaultCardV3StatItem label="Cover duration" value={vault.stats.duration} disabled={isMuted} />
             <VaultCardV3StatItem label="Morpho APY" value={vault.stats.baseApy} disabled={isMuted} />
@@ -615,34 +621,46 @@ const Skeleton = ({ className }) => (
   <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
 );
 
+/** Mirrors VaultCardV3's layout (same shell, padding and row heights) so the grid doesn't jump on load. */
 const VaultCardSkeleton = () => (
-  <div className="flex h-full min-w-0 flex-col rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
-    <div className="flex flex-col gap-4 mb-4">
-      <div className="flex justify-between items-start">
-        <div className="flex items-center gap-3">
-          <Skeleton className="w-10 h-10 rounded-lg" />
-        </div>
-        <div className="flex gap-1.5">
-          <Skeleton className="w-16 h-6 rounded-full" />
-          <Skeleton className="w-20 h-6 rounded-full" />
-        </div>
+  <div className={`${VAULT_CARD_SHELL} ${VAULT_CARD_PAD}`} style={{ boxShadow: '0 4px 20px -4px rgba(0,0,0,0.05)' }} aria-hidden>
+    <div className={VAULT_CARD_HEADER}>
+      <div className="flex items-center justify-between gap-3">
+        <Skeleton className="h-[3.625rem] w-36 rounded-lg sm:h-[2.875rem] sm:w-28" />
+        <Skeleton className="h-[2.875rem] w-[2.875rem] rounded-xl sm:w-[6.5rem] sm:rounded-lg" />
       </div>
-      <Skeleton className="h-7 w-3/4 rounded" />
+      <div className="flex justify-end gap-1.5">
+        <Skeleton className="h-5 w-20 rounded-md" />
+        <Skeleton className="h-5 w-28 rounded-md" />
+      </div>
     </div>
 
-    <div className="flex-1 mb-6 space-y-2">
-      <Skeleton className="h-4 w-full rounded" />
-      <Skeleton className="h-4 w-full rounded" />
-      <Skeleton className="h-4 w-2/3 rounded" />
+    <div className={VAULT_CARD_BODY}>
+      <div className="space-y-2">
+        <Skeleton className="mb-3 h-7 w-3/4 sm:mb-2 sm:h-6" />
+        {['w-full', 'w-full', 'w-full', 'w-full', 'w-2/3'].map((w, i) => (
+          <Skeleton key={i} className={`h-4 sm:h-3.5 ${w}`} />
+        ))}
+      </div>
+      <div className={`mt-auto ${VAULT_CARD_PAIR}`}>
+        {[1, 2].map((i) => (
+          <div key={i} className="flex flex-1 flex-col gap-2">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-9 w-20 sm:h-8" />
+          </div>
+        ))}
+      </div>
     </div>
 
-    <div className="grid grid-cols-2 gap-3 border-t border-gray-50 pt-6 shrink-0 lg:flex lg:items-end lg:justify-between lg:gap-8">
-      {[1, 2, 3, 4, 5].map((i) => (
-        <div key={i} className="flex flex-col">
-          <Skeleton className="h-3 w-16 mb-2 rounded" />
-          <Skeleton className="h-6 w-12 rounded" />
-        </div>
-      ))}
+    <div className={VAULT_CARD_FOOT}>
+      <div className={VAULT_CARD_STATS}>
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="flex flex-col gap-2">
+            <Skeleton className="h-3 w-16" />
+            <Skeleton className="h-6 w-14 sm:h-5" />
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 );
@@ -654,47 +672,76 @@ const ComingSoonMiniCardSkeleton = () => (
   </div>
 );
 
+const NAV_LINKS = [
+  { label: 'T&Cs', to: '/terms' },
+  { label: 'About', href: 'https://catalysis.network/' },
+  { label: 'Docs', href: 'https://docs.catalysis.network/' },
+  { label: 'Contact Us', href: 'https://catalysis.network/contact-us' },
+];
+
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = () => setMenuOpen(false);
 
-  const navLinks = (
-    <>
-      <Link to="/terms" className="hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>T&amp;Cs</Link>
-      <a href="https://catalysis.network/" className="hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>About</a>
-      <a href="https://docs.catalysis.network/" className="hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>Docs</a>
-      <a href="https://catalysis.network/contact-us" className="hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>Contact Us</a>
-    </>
-  );
+  // Close the mobile menu on Escape, and if the viewport grows past the md breakpoint.
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const onKey = (e) => e.key === 'Escape' && setMenuOpen(false);
+    const mq = window.matchMedia('(min-width: 768px)');
+    const onMq = (e) => e.matches && setMenuOpen(false);
+    window.addEventListener('keydown', onKey);
+    mq.addEventListener('change', onMq);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      mq.removeEventListener('change', onMq);
+    };
+  }, [menuOpen]);
+
+  const renderLinks = (className) =>
+    NAV_LINKS.map(({ label, to, href }) =>
+      to ? (
+        <Link key={label} to={to} className={className} onClick={closeMenu}>{label}</Link>
+      ) : (
+        <a key={label} href={href} className={className} onClick={closeMenu}>{label}</a>
+      )
+    );
 
   return (
-    <div className="sticky top-6 z-50 flex justify-center w-full px-4 mb-16">
-      <div className="relative w-full max-w-5xl">
+    <div className="sticky top-4 md:top-6 z-50 flex justify-center w-full px-4 mb-12 md:mb-14">
+      {/* Mobile: tap-outside overlay while the menu is open */}
+      {menuOpen && (
+        <div className="md:hidden fixed inset-0 bg-slate-900/10" aria-hidden="true" onClick={closeMenu} />
+      )}
+      <div className="relative w-full max-w-5xl lg:max-w-3xl">
         <nav
+          aria-label="Main"
           style={{
             minHeight: '58px',
-            backgroundColor: 'rgba(255, 255, 255, 0.4)',
+            backgroundColor: 'rgba(255, 255, 255, 0.6)',
             borderBottom: '1px solid rgba(56, 55, 55, 0.15)',
             boxShadow: '0 1px 24px 0 rgba(0, 0, 0, 0.05)'
           }}
-          className="backdrop-blur-md rounded-[999px] px-6 md:px-10 py-4 flex justify-between items-center"
+          className="backdrop-blur-md rounded-[999px] pl-5 pr-2 py-2 md:pl-8 md:pr-5 md:py-3 flex justify-between items-center"
         >
           <a
             href="https://catalysis.network"
-            className="flex items-center group cursor-pointer"
-            onClick={() => setMenuOpen(false)}
+            className="flex items-center group cursor-pointer rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600"
+            aria-label="Catalysis home"
+            onClick={closeMenu}
           >
-            <CatalysisNavbarLogo className="text-[#383737] group-hover:text-blue-600 transition-colors" />
+            <CatalysisNavbarLogo className="h-[22px] w-auto md:h-[26px] text-[#383737] group-hover:text-blue-600 transition-colors" />
           </a>
           {/* Desktop: links */}
-          <div className="hidden md:flex items-center gap-10 text-sm font-medium text-gray-600 font-sans">
-            {navLinks}
+          <div className="hidden md:flex items-center gap-1 text-sm font-medium text-gray-600 font-sans">
+            {renderLinks('px-3 py-2 rounded-full hover:text-blue-600 hover:bg-white/60 transition-colors focus-visible:outline-2 focus-visible:outline-blue-600')}
           </div>
           {/* Mobile: hamburger */}
           <button
             type="button"
-            className="md:hidden w-10 h-10 flex items-center justify-center rounded-full text-gray-600 hover:bg-white/60 hover:text-gray-900 transition-colors"
+            className="md:hidden w-11 h-11 flex items-center justify-center rounded-full text-gray-600 hover:bg-white/60 hover:text-gray-900 active:bg-white/80 transition-colors"
             onClick={() => setMenuOpen((o) => !o)}
             aria-expanded={menuOpen}
+            aria-controls="mobile-nav-menu"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
           >
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -703,16 +750,14 @@ const Navbar = () => {
         {/* Mobile dropdown menu */}
         {menuOpen && (
           <div
-            className="md:hidden absolute top-full left-0 right-0 mt-2 rounded-2xl py-3 px-4 text-sm font-medium text-gray-600 font-sans shadow-lg border border-gray-100"
+            id="mobile-nav-menu"
+            className="md:hidden absolute top-full left-0 right-0 mt-2 rounded-3xl p-2 text-base font-medium text-gray-700 font-sans shadow-lg border border-gray-100"
             style={{
               backgroundColor: 'rgba(255, 255, 255, 0.95)',
               backdropFilter: 'blur(12px)'
             }}
           >
-            <Link to="/terms" className="block py-3 px-4 rounded-lg hover:bg-gray-100 hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>T&amp;Cs</Link>
-            <a href="https://catalysis.network/" className="block py-3 px-4 rounded-lg hover:bg-gray-100 hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>About</a>
-            <a href="https://docs.catalysis.network/" className="block py-3 px-4 rounded-lg hover:bg-gray-100 hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>Docs</a>
-            <a href="https://catalysis.network/contact-us" className="block py-3 px-4 rounded-lg hover:bg-gray-100 hover:text-blue-600 transition-colors" onClick={() => setMenuOpen(false)}>Contact Us</a>
+            {renderLinks('block py-3 px-3 rounded-2xl hover:bg-gray-100 hover:text-blue-600 active:bg-gray-100 transition-colors')}
           </div>
         )}
       </div>
@@ -721,71 +766,78 @@ const Navbar = () => {
 };
 
 const FooterLogo = () => (
-  <svg 
-    width="1434" 
-    height="222" 
-    viewBox="0 0 1434 222" 
-    fill="none" 
+  <svg
+    width="1434"
+    height="370"
+    viewBox="0 0 1434 370"
+    fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className="w-full h-auto opacity-[0.07]"
+    aria-hidden="true"
+    focusable="false"
+    className="block w-full h-auto opacity-[0.06]"
   >
     <path d="M764.46 6.45703V278.057H806.752V6.45703H764.46ZM1255.46 62.33C1249.51 68.28 1242.01 71.254 1232.96 71.254C1223.9 71.254 1216.4 68.28 1210.45 62.33C1204.5 56.122 1201.53 48.621 1201.53 39.826C1201.53 31.032 1204.5 23.66 1210.45 17.71C1216.4 11.502 1223.9 8.39803 1232.96 8.39803C1242.01 8.39803 1249.51 11.502 1255.46 17.71C1261.41 23.66 1264.38 31.032 1264.38 39.826C1264.38 48.621 1261.41 56.122 1255.46 62.33ZM1211.62 278.058V97.25H1253.91V278.058H1211.62ZM1355.96 282.714C1333.2 282.714 1314.7 276.894 1300.48 265.254C1286.25 253.614 1279.14 239.387 1279.14 222.574H1321.43C1321.43 230.334 1324.79 236.671 1331.52 241.586C1338.5 246.5 1347.42 248.958 1358.29 248.958C1366.31 248.958 1372.64 247.018 1377.3 243.138C1381.96 239.258 1384.28 234.084 1384.28 227.618C1384.28 217.271 1379.76 210.934 1370.7 208.606L1324.14 195.802C1298.02 188.559 1284.96 171.875 1284.96 145.75C1284.96 130.747 1291.42 118.202 1304.36 108.114C1317.29 97.767 1333.97 92.594 1354.41 92.594C1377.43 92.594 1395.02 97.767 1407.18 108.114C1419.59 118.46 1425.8 132.04 1425.8 148.854H1384.28C1384.28 141.352 1381.44 135.532 1375.75 131.394C1370.32 126.996 1362.69 124.798 1352.86 124.798C1345.35 124.798 1339.15 126.608 1334.23 130.23C1329.32 133.592 1326.86 137.99 1326.86 143.422C1326.86 153.251 1332.03 159.718 1342.38 162.822L1385.45 175.238C1397.86 178.859 1407.95 185.067 1415.71 193.862C1423.47 202.398 1427.35 212.356 1427.35 223.738C1427.35 241.327 1421.01 255.554 1408.34 266.418C1395.92 277.282 1378.46 282.714 1355.96 282.714ZM1057.57 265.254C1071.79 276.894 1090.29 282.714 1113.05 282.714C1135.56 282.714 1153.02 277.282 1165.43 266.418C1178.11 255.554 1184.44 241.327 1184.44 223.738C1184.44 212.356 1180.56 202.398 1172.8 193.862C1165.04 185.067 1154.95 178.859 1142.54 175.238L1099.47 162.822C1089.12 159.718 1083.95 153.251 1083.95 143.422C1083.95 137.99 1086.41 133.592 1091.32 130.23C1096.24 126.608 1102.45 124.798 1109.95 124.798C1119.78 124.798 1127.41 126.996 1132.84 131.394C1138.53 135.532 1141.38 141.352 1141.38 148.854H1182.89C1182.89 132.04 1176.68 118.46 1164.27 108.114C1152.11 97.767 1134.52 92.594 1111.5 92.594C1091.06 92.594 1074.38 97.767 1061.45 108.114C1048.51 118.202 1042.05 130.747 1042.05 145.75C1042.05 171.875 1055.11 188.559 1081.23 195.802L1127.8 208.606C1136.85 210.934 1141.38 217.271 1141.38 227.618C1141.38 234.084 1139.05 239.258 1134.39 243.138C1129.73 247.018 1123.4 248.958 1115.38 248.958C1104.52 248.958 1095.59 246.5 1088.61 241.586C1081.88 236.671 1078.52 230.334 1078.52 222.574H1036.23C1036.23 239.387 1043.34 253.614 1057.57 265.254ZM968.557 97.25H1010.85V278.834C1010.85 306.511 1002.96 327.981 987.181 343.242C971.92 357.21 951.485 364.194 925.877 364.194C899.235 364.194 878.541 357.986 863.797 345.57C850.864 334.189 844.139 318.539 843.621 298.622H886.301C887.336 308.969 890.699 316.599 896.389 321.514C902.339 326.687 911.909 329.274 925.101 329.274C938.552 329.274 949.157 324.877 956.917 316.082C964.677 307.546 968.557 294.095 968.557 275.73V252.838C956.917 272.755 937.517 282.714 910.357 282.714C888.888 282.714 872.333 275.859 860.693 262.15C849.312 248.182 843.621 229.946 843.621 207.442V97.25H885.913V198.518C885.913 229.817 898.976 245.466 925.101 245.466C939.328 245.466 950.063 240.422 957.305 230.334C964.807 220.246 968.557 207.054 968.557 190.758V97.25ZM625.635 282.714C597.44 282.714 575.583 273.79 560.063 255.942C544.543 238.094 536.783 215.331 536.783 187.654C536.783 160.235 544.931 137.602 561.227 119.754C577.523 101.647 599.38 92.594 626.799 92.594C638.956 92.594 650.079 95.18 660.167 100.354C670.255 105.527 678.015 112.64 683.447 121.694V97.25H725.739V278.058H683.447V253.614C678.274 262.408 670.126 269.522 659.003 274.954C648.139 280.127 637.016 282.714 625.635 282.714ZM631.843 245.078C649.174 245.078 662.366 239.646 671.419 228.782C680.731 217.918 685.387 204.208 685.387 187.654C685.387 171.099 680.731 157.39 671.419 146.526C662.366 135.662 649.174 130.23 631.843 130.23C615.547 130.23 602.614 135.662 593.043 146.526C583.731 157.131 579.075 170.84 579.075 187.654C579.075 204.467 583.731 218.306 593.043 229.17C602.614 239.775 615.547 245.078 631.843 245.078ZM528.896 240.807C523.205 241.842 516.092 242.359 507.556 242.359C498.244 242.359 491.518 240.16 487.38 235.763C483.241 231.107 481.172 221.536 481.172 207.051V132.555H522.688V97.247H481.172V42.539H438.88V97.247H408.228V132.555H438.88V216.751C438.88 230.978 440.82 242.747 444.7 252.059C448.58 261.371 454.012 267.967 460.996 271.847C467.98 275.468 474.058 277.796 479.232 278.831C484.405 279.866 490.484 280.383 497.468 280.383C509.625 280.383 520.101 279.607 528.896 278.055V240.807ZM286.862 282.714C258.668 282.714 236.811 273.79 221.29 255.942C205.77 238.094 198.01 215.331 198.01 187.654C198.01 160.235 206.158 137.602 222.454 119.754C238.751 101.647 260.608 92.594 288.026 92.594C300.184 92.594 311.306 95.18 321.395 100.354C331.483 105.527 339.242 112.64 344.674 121.694V97.25H386.966V278.058H344.674V253.614C339.501 262.408 331.353 269.522 320.23 274.954C309.367 280.127 298.244 282.714 286.862 282.714ZM293.07 245.078C310.401 245.078 323.593 239.646 332.647 228.782C341.958 217.918 346.615 204.208 346.615 187.654C346.615 171.099 341.958 157.39 332.647 146.526C323.593 135.662 310.401 130.23 293.07 130.23C276.775 130.23 263.841 135.662 254.271 146.526C244.959 157.131 240.303 170.84 240.303 187.654C240.303 204.467 244.959 218.306 254.271 229.17C263.841 239.775 276.775 245.078 293.07 245.078ZM30.704 256.718C47 274.048 68.986 282.714 96.664 282.714C121.496 282.714 141.413 276.635 156.416 264.478C171.677 252.32 180.342 236.024 182.412 215.59H140.12C135.205 235.248 120.72 245.078 96.664 245.078C81.661 245.078 69.892 240.163 61.356 230.334C53.078 220.246 48.94 206.019 48.94 187.654C48.94 169.288 53.078 155.191 61.356 145.362C69.892 135.274 81.661 130.23 96.664 130.23C120.978 130.23 135.464 140.706 140.12 161.658H182.412C180.342 140.706 171.677 124.022 156.416 111.606C141.413 98.931 121.496 92.594 96.664 92.594C68.986 92.594 47 101.388 30.704 118.978C14.666 136.308 6.648 159.2 6.648 187.654C6.648 216.107 14.666 239.128 30.704 256.718Z" fill="black"/>
   </svg>
 );
 
-const Footer = () => (
-  <footer className="mt-auto w-full bg-white relative overflow-visible">
-    {/* Background watermark - matches Figma footer */}
-    <div className="absolute inset-0 flex items-end justify-center select-none pointer-events-none overflow-visible min-h-[21.4375rem]">
-      <div className="w-full max-w-[90rem] px-6 pb-0">
-        <FooterLogo />
-      </div>
-    </div>
+// X (formerly Twitter) mark; lucide only ships the old bird.
+const XLogo = ({ className = '' }) => (
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false" className={className}>
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
-    {/* Content - 1440 Fill x 343 Hug per Figma */}
-    <div className="relative z-10 w-full max-w-[90rem] mx-auto px-14 pb-14 pt-6 flex flex-col justify-center">
-      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-12 md:gap-16">
-        {/* Left: Logo + social */}
-        <div className="flex flex-col gap-6">
-          <a href="/" className="inline-block">
+const footerLinkClass =
+  'inline-flex min-h-11 items-center hover:text-blue-600 transition-colors lg:min-h-0 lg:py-1';
+const footerSocialClass =
+  'w-11 h-11 lg:w-9 lg:h-9 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 transition-colors';
+
+const Footer = () => (
+  <footer className="mt-auto w-full bg-white border-t border-gray-200/70">
+    {/* Same centered column as <main>: 768px on desktop, 16px gutters below lg */}
+    <div className="mx-auto w-full max-w-[66rem] lg:max-w-[50rem] px-4 pt-10 lg:pt-12">
+      <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+        {/* Logo + social */}
+        <div className="flex items-center justify-between lg:flex-col lg:items-start lg:gap-5">
+          <Link to="/" className="inline-flex min-h-11 items-center lg:min-h-0" aria-label="Catalysis home">
             <CatalysisNavbarLogo className="h-6 w-auto text-[#383737]" />
-          </a>
-          <div className="flex gap-3">
-            <a href="https://x.com/0xcatalysis" className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors" aria-label="X (Twitter)" rel="noopener noreferrer" target="_blank">
-              <Twitter className="w-4 h-4 text-gray-600" />
+          </Link>
+          <div className="flex gap-2">
+            <a href="https://x.com/0xcatalysis" className={footerSocialClass} aria-label="X (Twitter)" rel="noopener noreferrer" target="_blank">
+              <XLogo className="w-4 h-4 lg:w-3.5 lg:h-3.5" />
             </a>
-            <a href="https://github.com/0xcatalysis" className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors" aria-label="GitHub" rel="noopener noreferrer" target="_blank">
-              <Github className="w-4 h-4 text-gray-600" />
+            <a href="https://github.com/0xcatalysis" className={footerSocialClass} aria-label="GitHub" rel="noopener noreferrer" target="_blank">
+              <Github className="w-[18px] h-[18px] lg:w-4 lg:h-4" />
             </a>
           </div>
         </div>
 
-        {/* Right: Three columns - Resources, Developers, Company */}
-        <nav className="flex flex-wrap gap-x-16 gap-y-8 md:gap-x-20" aria-label="Footer">
+        {/* Three columns - Resources, Developers, Company */}
+        <nav className="grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-3 lg:gap-x-14" aria-label="Footer">
           <div>
-            <h4 className="font-bold text-sm text-gray-900 mb-4 font-sans">Resources</h4>
-            <ul className="text-sm text-gray-500 space-y-3 font-sans">
+            <h4 className="font-bold text-sm text-gray-900 mb-1 lg:mb-3 font-sans">Resources</h4>
+            <ul className="text-sm text-gray-500 font-sans lg:space-y-1">
               <li>
                 <a
                   href="https://glowing-force-2df.notion.site/Catalysis-a68f0b2f34bc82d3905981e37be36063"
-                  className="hover:text-blue-600 transition-colors"
+                  className={footerLinkClass}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
                   Brand
                 </a>
               </li>
-              <li><a href="https://catalysis.network/contact-us" className="hover:text-blue-600 transition-colors">Help & Support</a></li>
+              <li><a href="https://catalysis.network/contact-us" className={footerLinkClass}>Help & Support</a></li>
             </ul>
           </div>
           <div>
-            <h4 className="font-bold text-sm text-gray-900 mb-4 font-sans">Developers</h4>
-            <ul className="text-sm text-gray-500 space-y-3 font-sans">
-              <li><a href="https://docs.catalysis.network/" className="hover:text-blue-600 transition-colors">Docs</a></li>
+            <h4 className="font-bold text-sm text-gray-900 mb-1 lg:mb-3 font-sans">Developers</h4>
+            <ul className="text-sm text-gray-500 font-sans lg:space-y-1">
+              <li><a href="https://docs.catalysis.network/" className={footerLinkClass}>Docs</a></li>
               <li>
                 <a
                   href="https://arxiv.org/abs/2505.03843"
-                  className="hover:text-blue-600 transition-colors"
+                  className={footerLinkClass}
                   rel="noopener noreferrer"
                   target="_blank"
                 >
@@ -795,17 +847,22 @@ const Footer = () => (
             </ul>
           </div>
           <div>
-            <h4 className="font-bold text-sm text-gray-900 mb-4 font-sans">Company</h4>
-            <ul className="text-sm text-gray-500 space-y-3 font-sans">
-              <li><a href="https://catalysis.network/contact-us" className="hover:text-blue-600 transition-colors">Contact Us</a></li>
+            <h4 className="font-bold text-sm text-gray-900 mb-1 lg:mb-3 font-sans">Company</h4>
+            <ul className="text-sm text-gray-500 font-sans lg:space-y-1">
+              <li><a href="https://catalysis.network/contact-us" className={footerLinkClass}>Contact Us</a></li>
               <li>
-                <Link to="/terms" className="hover:text-blue-600 transition-colors">
+                <Link to="/terms" className={footerLinkClass}>
                   Terms & Conditions
                 </Link>
               </li>
             </ul>
           </div>
         </nav>
+      </div>
+
+      {/* Wordmark signature: spans the column width, full word visible */}
+      <div className="select-none pointer-events-none pt-10 pb-6">
+        <FooterLogo />
       </div>
     </div>
   </footer>
@@ -814,26 +871,91 @@ const Footer = () => (
 /**
  * COVERED VAULT TERMS (in-app)
  */
+// Presentation-only overrides for the exported Google Doc (legal text untouched):
+// drop the print-page padding / max-width, load the doc's Inter font, keep text
+// inside the column on phones, and let the iframe grow to its content height.
+const TERMS_DOC_STYLE = `
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  html { overflow: hidden; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body.doc-content { max-width: none; margin: 0; padding: 40px 48px 48px; overflow-wrap: break-word; }
+  body.doc-content, body.doc-content * { font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif !important; }
+  /* Text lives in 11pt spans; match the p/li strut so line-height follows the text size. */
+  p, li { font-size: 11pt; line-height: 1.6 !important; }
+  .c10, .c23 { padding-bottom: 10pt; }
+  /* Keep a gap between clause numbers (e.g. "5.30.") and the text. */
+  li:before { box-sizing: border-box; padding-right: 6px; }
+  a { color: #2563eb; overflow-wrap: anywhere; }
+  @media (max-width: 640px) {
+    body.doc-content { padding: 24px 18px 32px; }
+    .c10, .c16, .c11, .c13, .c12, .c23, .c8, .c5, .c3 { text-align: left !important; }
+    /* Pull hanging clause numbers inside the card on narrow screens. */
+    .c5, .c28, .c8, .c19 { margin-left: 18pt !important; }
+    .c3, .c15 { margin-left: 30pt !important; }
+    .c21, .c27 { margin-left: 30pt !important; }
+  }
+</style>
+`;
+const TERMS_SRC_DOC = coveredVaultTermsHtml.replace('</head>', `${TERMS_DOC_STYLE}</head>`);
+
 function TermsPage() {
+  const iframeRef = useRef(null);
+  const resizeObserverRef = useRef(null);
+  const [docHeight, setDocHeight] = useState(null);
+
+  useEffect(() => () => resizeObserverRef.current?.disconnect(), []);
+
+  // Size the iframe to its document so the page scrolls as one (no nested scroll box on iPhone).
+  const handleLoad = () => {
+    const doc = iframeRef.current?.contentDocument;
+    if (!doc?.body) return;
+    // Body height (not scrollHeight, which never shrinks below the frame); +2 for the frame border.
+    const measure = () => setDocHeight(Math.ceil(doc.body.getBoundingClientRect().height) + 2);
+    measure();
+    resizeObserverRef.current?.disconnect();
+    const RO = doc.defaultView?.ResizeObserver;
+    if (RO) {
+      resizeObserverRef.current = new RO(measure);
+      resizeObserverRef.current.observe(doc.body);
+    }
+    doc.fonts?.ready.then(measure);
+  };
+
   return (
     <div className="catalysis-app-surface min-h-screen font-sans text-gray-900 flex flex-col">
       <Navbar />
-      <main className="mx-auto w-full max-w-3xl px-6 flex-1 pb-20 pt-4">
+      <main className="mx-auto w-full max-w-[66rem] lg:max-w-[50rem] px-4 flex-1 pb-20">
         <Link
           to="/"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-600 transition-colors mb-8 font-sans"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-600 transition-colors mb-6 font-sans"
         >
           ← Back to Morpho Covered Vaults
         </Link>
         <iframe
+          ref={iframeRef}
           title="Covered Vault Participation Terms and Conditions"
-          srcDoc={coveredVaultTermsHtml}
-          className="w-full min-h-[calc(100vh-8rem)] rounded-xl border border-gray-200 bg-white shadow-sm"
+          srcDoc={TERMS_SRC_DOC}
+          onLoad={handleLoad}
+          scrolling="no"
+          style={docHeight ? { height: docHeight } : undefined}
+          className={`block w-full rounded-xl border border-gray-200 bg-white shadow-sm ${docHeight ? '' : 'min-h-[calc(100vh-8rem)]'}`}
         />
       </main>
       <Footer />
     </div>
   );
+}
+
+// BrowserRouter keeps the old scroll offset on <Link> navigation; start new pages at the top.
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  const navigationType = useNavigationType();
+  useEffect(() => {
+    if (navigationType !== 'POP') window.scrollTo(0, 0);
+  }, [pathname, navigationType]);
+  return null;
 }
 
 /**
@@ -896,7 +1018,7 @@ function Home() {
     <div className="catalysis-app-surface min-h-screen font-sans text-gray-900 flex flex-col">
       <Navbar />
 
-      <main className="mx-auto w-full max-w-[66rem] px-4 flex-1 pb-20">
+      <main className="mx-auto w-full max-w-[66rem] lg:max-w-[50rem] px-4 flex-1 pb-20">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 rounded-lg overflow-hidden shadow-lg shadow-blue-500/20 shrink-0 ring-1 ring-black/5">
             <img
@@ -913,7 +1035,7 @@ function Home() {
 
         {loading ? (
           <>
-            <div className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-5 lg:mb-20 lg:w-[64rem] lg:gap-6 lg:[zoom:0.75]">
+            <div className="mb-12 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-5">
               {[1, 2, 3, 4].map((i) => (
                 <VaultCardSkeleton key={i} />
               ))}
@@ -931,7 +1053,7 @@ function Home() {
           </>
         ) : (
           <>
-            <div className="mb-16 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-5 lg:mb-20 lg:w-[64rem] lg:gap-6 lg:[zoom:0.75]">
+            <div className="mb-12 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-5">
               {sortedVaults.map((vault, i) => (
                 <VaultCardV3 key={vault.id} vault={vault} appearStagger={i} />
               ))}
@@ -966,6 +1088,7 @@ function Home() {
 export default function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL}>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/terms" element={<TermsPage />} />
