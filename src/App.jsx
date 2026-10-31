@@ -39,7 +39,7 @@ const MOCK_VAULTS = [
       baseApy: "1.47%",
       haircut: 0.28,
       apyBoost: "+0.75%",
-      currentTvl: "$0.01M",
+      currentTvl: "$3.6M",
       duration: "3 months"
     },
     morpho: {
@@ -55,9 +55,7 @@ const MOCK_VAULTS = [
     name: "KPK ETH Prime v2",
     description: "This is a covered version of the KPK ETH Prime v2 Vault on Morpho. A low-risk ETH vault with 24h automation. Allocations are continuously rebalanced across liquid markets with strict collateral filters in place to preserve liquidity and mitigate risk.",
     icon: publicUrl('kpk-logo.png'),
-    isComingSoon: true,
     badges: [
-      { text: "Coming Soon", color: "bg-[#DBEAFE] text-[#1E3A8A]" },
       { text: "Credora A", color: "bg-[#F1F5F9] text-[#475569]" },
       { text: "10% Protection", color: "bg-[#1E293B] text-white" }
     ],
@@ -66,14 +64,14 @@ const MOCK_VAULTS = [
       baseApy: "0.0%",
       haircut: 0,
       apyBoost: "+0.75%",
-      currentTvl: "$0.00M",
+      currentTvl: "$2.1M",
       duration: "3 months"
     },
     morpho: {
       address: '0xBb50A5341368751024ddf33385BA8cf61fE65FF9',
       chainId: 1
     },
-    status: "inactive",
+    status: "active",
     moreInfoUrl: "https://app.morpho.org/ethereum/vault/0xBb50A5341368751024ddf33385BA8cf61fE65FF9/kpk-eth-prime-v2"
   },
   {
@@ -81,9 +79,7 @@ const MOCK_VAULTS = [
     name: "Gauntlet USDC Prime",
     description: "This is a covered version of the USDC Prime Vault on Morpho. The Gauntlet USDC Prime vault aims to optimize for risk-adjusted yield across large market cap and high liquidity collateral markets.",
     icon: publicUrl('gauntlet-logo-full-dark.svg'),
-    isComingSoon: true,
     badges: [
-      { text: "Coming Soon", color: "bg-[#DBEAFE] text-[#1E3A8A]" },
       { text: "Credora A", color: "bg-[#F1F5F9] text-[#475569]" },
       { text: "10% Protection", color: "bg-[#1E293B] text-white" }
     ],
@@ -92,14 +88,14 @@ const MOCK_VAULTS = [
       baseApy: "0.0%",
       haircut: 0,
       apyBoost: "+0.75%",
-      currentTvl: "$0.00M",
+      currentTvl: "$3.2M",
       duration: "3 months"
     },
     morpho: {
       address: '0xdd0f28e19C1780eb6396170735D45153D261490d',
       chainId: 1
     },
-    status: "inactive",
+    status: "active",
     moreInfoUrl: "https://app.morpho.org/ethereum/vault/0xdd0f28e19C1780eb6396170735D45153D261490d/gauntlet-usdc-prime"
   },
   {
@@ -107,9 +103,7 @@ const MOCK_VAULTS = [
     name: "Steakhouse Prime Instant V2",
     description: "This is a covered version of the Steakhouse Prime Instant v2 vault on Morpho. The Steakhouse ETH vault aims to optimize yields by lending ETH against blue chip crypto and real world asset (RWA) collateral markets, depending on market conditions.",
     icon: publicUrl('steakhouse-logo.svg'),
-    isComingSoon: true,
     badges: [
-      { text: "Coming Soon", color: "bg-[#DBEAFE] text-[#1E3A8A]" },
       { text: "Credora A", color: "bg-[#F1F5F9] text-[#475569]" },
       { text: "10% Protection", color: "bg-[#1E293B] text-white" }
     ],
@@ -118,14 +112,14 @@ const MOCK_VAULTS = [
       baseApy: "0.0%",
       haircut: 0,
       apyBoost: "+0.75%",
-      currentTvl: "$0.00M",
+      currentTvl: "$1.2M",
       duration: "3 months"
     },
     morpho: {
       address: '0xbeef0046fcab1dE47E41fB75BB3dC4Dfc94108E3',
       chainId: 1
     },
-    status: "inactive",
+    status: "active",
     moreInfoUrl: "https://app.morpho.org/ethereum/vault/0xbeef0046fcab1dE47E41fB75BB3dC4Dfc94108E3/steakhouse-prime-instant"
   }
 ];
