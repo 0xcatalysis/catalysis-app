@@ -161,7 +161,7 @@ function FaqItem({ num, question, children }) {
 
 function FaqsSection() {
   return (
-    <section className="mt-12 max-w-3xl lg:mt-10" aria-labelledby="faqs-heading">
+    <section className="mt-12 max-w-3xl lg:max-w-none lg:mt-10" aria-labelledby="faqs-heading">
       <h2 id="faqs-heading" className="mb-5 font-sans text-xl font-bold text-gray-900 lg:mb-4 lg:text-lg">
         FAQs
       </h2>
@@ -367,12 +367,12 @@ function vaultBadgeV2ClassName(text) {
  * Shared by the real card and its skeleton so the loading grid matches the loaded one.
  */
 const VAULT_CARD_SHELL = 'flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white';
-const VAULT_CARD_PAD = 'p-6 sm:p-5';
-const VAULT_CARD_HEADER = 'mb-5 space-y-3 sm:mb-4 sm:space-y-2.5';
-const VAULT_CARD_BODY = 'mb-6 flex flex-1 flex-col gap-6 sm:mb-4 sm:gap-4';
-const VAULT_CARD_PAIR = 'flex w-full min-w-0 flex-row justify-between gap-4 sm:gap-5';
-const VAULT_CARD_STATS = 'grid min-w-0 grid-cols-2 gap-x-4 gap-y-5 sm:gap-x-5 sm:gap-y-3';
-const VAULT_CARD_FOOT = 'mt-auto w-full min-w-0 border-t border-gray-50 pt-5 sm:pt-4';
+const VAULT_CARD_PAD = 'p-6 sm:max-lg:p-5';
+const VAULT_CARD_HEADER = 'mb-5 space-y-3 sm:max-lg:mb-4 sm:max-lg:space-y-2.5';
+const VAULT_CARD_BODY = 'mb-6 flex flex-1 flex-col gap-6 sm:max-lg:mb-4 sm:max-lg:gap-4';
+const VAULT_CARD_PAIR = 'flex w-full min-w-0 flex-row justify-between gap-4 sm:max-lg:gap-5 lg:gap-6';
+const VAULT_CARD_STATS = 'grid min-w-0 grid-cols-2 gap-x-4 gap-y-5 sm:max-lg:gap-x-5 sm:max-lg:gap-y-3 lg:gap-x-6';
+const VAULT_CARD_FOOT = 'mt-auto w-full min-w-0 border-t border-gray-50 pt-5 sm:max-lg:pt-4';
 
 const VaultCardV2Badge = ({ children, className = '' }) => (
   <span
@@ -386,12 +386,12 @@ const VaultCardV2Badge = ({ children, className = '' }) => (
 
 const VaultCardV3StatItem = ({ label, value, icon, isPositive, disabled, className = '' }) => (
   <div className={`flex h-full min-w-0 flex-col ${disabled ? 'opacity-40' : ''} ${className}`.trim()}>
-    <span className="mb-1 font-sans text-xs font-medium tracking-wider text-gray-400 uppercase sm:mb-0.5 sm:text-[0.6875rem]">
+    <span className="mb-1 font-sans text-xs font-medium tracking-wider text-gray-400 uppercase sm:max-lg:mb-0.5 sm:max-lg:text-[0.6875rem]">
       {label}
     </span>
     <div className="mt-auto flex min-h-[1.375rem] min-w-0 items-end gap-1.5 pt-0.5">
       <span
-        className={`truncate font-satoshi text-xl font-bold tabular-nums tracking-tight sm:text-[1.0625rem] ${isPositive ? 'text-blue-600' : 'text-[#041c64]'}`}
+        className={`truncate font-satoshi text-xl font-bold tabular-nums tracking-tight sm:max-lg:text-[1.0625rem] ${isPositive ? 'text-blue-600' : 'text-[#041c64]'}`}
       >
         {value}
       </span>
@@ -419,11 +419,11 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
         <div className={VAULT_CARD_HEADER}>
           <div className="flex min-w-0 flex-row items-center justify-between gap-3">
             <div className="flex min-w-0 flex-1 items-center pr-2">
-              <div className="min-w-0 max-w-full rounded-lg border border-gray-100 bg-gray-50 p-2.5 transition-colors duration-300 group-hover:border-blue-100 sm:p-2">
+              <div className="min-w-0 max-w-full rounded-lg border border-gray-100 bg-gray-50 p-2.5 transition-colors duration-300 group-hover:border-blue-100 sm:max-lg:p-2">
                 <img
                   src={vault.icon}
                   alt=""
-                  className={`h-9 max-h-9 w-auto max-w-full object-contain object-left sm:h-7 sm:max-h-7 ${isMuted ? 'grayscale opacity-40' : ''}`}
+                  className={`h-9 max-h-9 w-auto max-w-full object-contain object-left sm:max-lg:h-7 sm:max-lg:max-h-7 ${isMuted ? 'grayscale opacity-40' : ''}`}
                 />
               </div>
             </div>
@@ -491,7 +491,7 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
         <div className={VAULT_CARD_BODY}>
           <div className="min-w-0 w-full">
             <h3
-              className={`mb-3 font-satoshi text-2xl font-bold tracking-tight leading-tight sm:mb-2 sm:text-xl ${isMuted ? 'text-gray-400' : 'text-[#041c64]'}`}
+              className={`mb-3 font-satoshi text-2xl font-bold tracking-tight leading-tight sm:max-lg:mb-2 sm:max-lg:text-xl ${isMuted ? 'text-gray-400' : 'text-[#041c64]'}`}
             >
               {vault.titleUrl ? (
                 <a
@@ -507,7 +507,7 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
                 vault.name
               )}
             </h3>
-            <p className={`text-sm leading-relaxed font-medium sm:text-xs sm:leading-[1.6] ${isMuted ? 'text-gray-300' : 'text-gray-500'}`}>
+            <p className={`text-sm leading-relaxed font-medium sm:max-lg:text-xs sm:max-lg:leading-[1.6] ${isMuted ? 'text-gray-300' : 'text-gray-500'}`}>
               {vault.description}{' '}
               {vault.moreInfoUrl ? (
                 <a
@@ -517,31 +517,31 @@ const VaultCardV3 = ({ vault, appearStagger = 0 }) => {
                   className={`inline-block rounded-sm align-[-0.0625em] focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${isMuted ? 'text-gray-300 hover:text-gray-400' : 'text-gray-400 hover:text-blue-600'} transition-colors`}
                   aria-label={`View ${vault.name} on Morpho (opens in a new tab)`}
                 >
-                  <ExternalLink className="block h-3.5 w-3.5 sm:h-3 sm:w-3" />
+                  <ExternalLink className="block h-3.5 w-3.5 sm:max-lg:h-3 sm:max-lg:w-3" />
                 </a>
               ) : (
-                <ExternalLink className={`ml-0.5 inline-block h-3.5 w-3.5 align-[-0.0625em] sm:h-3 sm:w-3 ${isMuted ? 'text-gray-300' : 'text-gray-400'}`} aria-hidden />
+                <ExternalLink className={`ml-0.5 inline-block h-3.5 w-3.5 align-[-0.0625em] sm:max-lg:h-3 sm:max-lg:w-3 ${isMuted ? 'text-gray-300' : 'text-gray-400'}`} aria-hidden />
               )}
             </p>
           </div>
 
           <div className={`mt-auto ${VAULT_CARD_PAIR} ${isMuted ? 'opacity-40' : ''}`}>
             <div className="flex min-w-0 flex-1 flex-col gap-1">
-              <span className="font-sans text-xs font-semibold tracking-wide text-[#041c64]/75 uppercase sm:text-[0.6875rem]">
+              <span className="font-sans text-xs font-semibold tracking-wide text-[#041c64]/75 uppercase sm:max-lg:text-[0.6875rem]">
                 Net coverage yield
               </span>
               <div className="mt-auto flex items-baseline gap-1">
-                <span className="font-satoshi text-4xl font-bold tabular-nums tracking-tight text-[#041c64] sm:text-[1.75rem]">
+                <span className="font-satoshi text-4xl font-bold tabular-nums tracking-tight text-[#041c64] sm:max-lg:text-[1.75rem]">
                   {vault.status === 'inactive' ? '0.00%' : coveredApyFromStats(vault.stats)}
                 </span>
-                <span className="text-sm font-bold text-blue-500 sm:text-xs">APY</span>
+                <span className="text-sm font-bold text-blue-500 sm:max-lg:text-xs">APY</span>
               </div>
             </div>
             <div className="flex min-w-0 flex-1 flex-col gap-1">
-              <span className="font-sans text-xs font-semibold tracking-wide text-[#041c64]/75 uppercase sm:text-[0.6875rem]">
+              <span className="font-sans text-xs font-semibold tracking-wide text-[#041c64]/75 uppercase sm:max-lg:text-[0.6875rem]">
                 Coverage TVL cap
               </span>
-              <span className="mt-auto font-satoshi text-4xl font-bold tabular-nums tracking-tight text-[#041c64] sm:text-[1.75rem]">
+              <span className="mt-auto font-satoshi text-4xl font-bold tabular-nums tracking-tight text-[#041c64] sm:max-lg:text-[1.75rem]">
                 {vault.stats.tvlCap}
               </span>
             </div>
@@ -626,7 +626,7 @@ const VaultCardSkeleton = () => (
   <div className={`${VAULT_CARD_SHELL} ${VAULT_CARD_PAD}`} style={{ boxShadow: '0 4px 20px -4px rgba(0,0,0,0.05)' }} aria-hidden>
     <div className={VAULT_CARD_HEADER}>
       <div className="flex items-center justify-between gap-3">
-        <Skeleton className="h-[3.625rem] w-36 rounded-lg sm:h-[2.875rem] sm:w-28" />
+        <Skeleton className="h-[3.625rem] w-36 rounded-lg sm:max-lg:h-[2.875rem] sm:max-lg:w-28" />
         <Skeleton className="h-[2.875rem] w-[2.875rem] rounded-xl sm:w-[6.5rem] sm:rounded-lg" />
       </div>
       <div className="flex justify-end gap-1.5">
@@ -637,16 +637,16 @@ const VaultCardSkeleton = () => (
 
     <div className={VAULT_CARD_BODY}>
       <div className="space-y-2">
-        <Skeleton className="mb-3 h-7 w-3/4 sm:mb-2 sm:h-6" />
+        <Skeleton className="mb-3 h-7 w-3/4 sm:max-lg:mb-2 sm:max-lg:h-6" />
         {['w-full', 'w-full', 'w-full', 'w-full', 'w-2/3'].map((w, i) => (
-          <Skeleton key={i} className={`h-4 sm:h-3.5 ${w}`} />
+          <Skeleton key={i} className={`h-4 sm:max-lg:h-3.5 ${w}`} />
         ))}
       </div>
       <div className={`mt-auto ${VAULT_CARD_PAIR}`}>
         {[1, 2].map((i) => (
           <div key={i} className="flex flex-1 flex-col gap-2">
             <Skeleton className="h-3 w-24" />
-            <Skeleton className="h-9 w-20 sm:h-8" />
+            <Skeleton className="h-9 w-20 sm:max-lg:h-8" />
           </div>
         ))}
       </div>
@@ -657,7 +657,7 @@ const VaultCardSkeleton = () => (
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="flex flex-col gap-2">
             <Skeleton className="h-3 w-16" />
-            <Skeleton className="h-6 w-14 sm:h-5" />
+            <Skeleton className="h-6 w-14 sm:max-lg:h-5" />
           </div>
         ))}
       </div>
@@ -712,7 +712,7 @@ const Navbar = () => {
       {menuOpen && (
         <div className="md:hidden fixed inset-0 bg-slate-900/10" aria-hidden="true" onClick={closeMenu} />
       )}
-      <div className="relative w-full max-w-5xl lg:max-w-3xl">
+      <div className="relative w-full max-w-5xl lg:max-w-[58rem]">
         <nav
           aria-label="Main"
           style={{
@@ -768,13 +768,13 @@ const Navbar = () => {
 const FooterLogo = () => (
   <svg
     width="1434"
-    height="370"
-    viewBox="0 0 1434 370"
+    height="222"
+    viewBox="0 0 1434 222"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     aria-hidden="true"
     focusable="false"
-    className="block w-full h-auto opacity-[0.06]"
+    className="block w-full h-auto opacity-[0.07]"
   >
     <path d="M764.46 6.45703V278.057H806.752V6.45703H764.46ZM1255.46 62.33C1249.51 68.28 1242.01 71.254 1232.96 71.254C1223.9 71.254 1216.4 68.28 1210.45 62.33C1204.5 56.122 1201.53 48.621 1201.53 39.826C1201.53 31.032 1204.5 23.66 1210.45 17.71C1216.4 11.502 1223.9 8.39803 1232.96 8.39803C1242.01 8.39803 1249.51 11.502 1255.46 17.71C1261.41 23.66 1264.38 31.032 1264.38 39.826C1264.38 48.621 1261.41 56.122 1255.46 62.33ZM1211.62 278.058V97.25H1253.91V278.058H1211.62ZM1355.96 282.714C1333.2 282.714 1314.7 276.894 1300.48 265.254C1286.25 253.614 1279.14 239.387 1279.14 222.574H1321.43C1321.43 230.334 1324.79 236.671 1331.52 241.586C1338.5 246.5 1347.42 248.958 1358.29 248.958C1366.31 248.958 1372.64 247.018 1377.3 243.138C1381.96 239.258 1384.28 234.084 1384.28 227.618C1384.28 217.271 1379.76 210.934 1370.7 208.606L1324.14 195.802C1298.02 188.559 1284.96 171.875 1284.96 145.75C1284.96 130.747 1291.42 118.202 1304.36 108.114C1317.29 97.767 1333.97 92.594 1354.41 92.594C1377.43 92.594 1395.02 97.767 1407.18 108.114C1419.59 118.46 1425.8 132.04 1425.8 148.854H1384.28C1384.28 141.352 1381.44 135.532 1375.75 131.394C1370.32 126.996 1362.69 124.798 1352.86 124.798C1345.35 124.798 1339.15 126.608 1334.23 130.23C1329.32 133.592 1326.86 137.99 1326.86 143.422C1326.86 153.251 1332.03 159.718 1342.38 162.822L1385.45 175.238C1397.86 178.859 1407.95 185.067 1415.71 193.862C1423.47 202.398 1427.35 212.356 1427.35 223.738C1427.35 241.327 1421.01 255.554 1408.34 266.418C1395.92 277.282 1378.46 282.714 1355.96 282.714ZM1057.57 265.254C1071.79 276.894 1090.29 282.714 1113.05 282.714C1135.56 282.714 1153.02 277.282 1165.43 266.418C1178.11 255.554 1184.44 241.327 1184.44 223.738C1184.44 212.356 1180.56 202.398 1172.8 193.862C1165.04 185.067 1154.95 178.859 1142.54 175.238L1099.47 162.822C1089.12 159.718 1083.95 153.251 1083.95 143.422C1083.95 137.99 1086.41 133.592 1091.32 130.23C1096.24 126.608 1102.45 124.798 1109.95 124.798C1119.78 124.798 1127.41 126.996 1132.84 131.394C1138.53 135.532 1141.38 141.352 1141.38 148.854H1182.89C1182.89 132.04 1176.68 118.46 1164.27 108.114C1152.11 97.767 1134.52 92.594 1111.5 92.594C1091.06 92.594 1074.38 97.767 1061.45 108.114C1048.51 118.202 1042.05 130.747 1042.05 145.75C1042.05 171.875 1055.11 188.559 1081.23 195.802L1127.8 208.606C1136.85 210.934 1141.38 217.271 1141.38 227.618C1141.38 234.084 1139.05 239.258 1134.39 243.138C1129.73 247.018 1123.4 248.958 1115.38 248.958C1104.52 248.958 1095.59 246.5 1088.61 241.586C1081.88 236.671 1078.52 230.334 1078.52 222.574H1036.23C1036.23 239.387 1043.34 253.614 1057.57 265.254ZM968.557 97.25H1010.85V278.834C1010.85 306.511 1002.96 327.981 987.181 343.242C971.92 357.21 951.485 364.194 925.877 364.194C899.235 364.194 878.541 357.986 863.797 345.57C850.864 334.189 844.139 318.539 843.621 298.622H886.301C887.336 308.969 890.699 316.599 896.389 321.514C902.339 326.687 911.909 329.274 925.101 329.274C938.552 329.274 949.157 324.877 956.917 316.082C964.677 307.546 968.557 294.095 968.557 275.73V252.838C956.917 272.755 937.517 282.714 910.357 282.714C888.888 282.714 872.333 275.859 860.693 262.15C849.312 248.182 843.621 229.946 843.621 207.442V97.25H885.913V198.518C885.913 229.817 898.976 245.466 925.101 245.466C939.328 245.466 950.063 240.422 957.305 230.334C964.807 220.246 968.557 207.054 968.557 190.758V97.25ZM625.635 282.714C597.44 282.714 575.583 273.79 560.063 255.942C544.543 238.094 536.783 215.331 536.783 187.654C536.783 160.235 544.931 137.602 561.227 119.754C577.523 101.647 599.38 92.594 626.799 92.594C638.956 92.594 650.079 95.18 660.167 100.354C670.255 105.527 678.015 112.64 683.447 121.694V97.25H725.739V278.058H683.447V253.614C678.274 262.408 670.126 269.522 659.003 274.954C648.139 280.127 637.016 282.714 625.635 282.714ZM631.843 245.078C649.174 245.078 662.366 239.646 671.419 228.782C680.731 217.918 685.387 204.208 685.387 187.654C685.387 171.099 680.731 157.39 671.419 146.526C662.366 135.662 649.174 130.23 631.843 130.23C615.547 130.23 602.614 135.662 593.043 146.526C583.731 157.131 579.075 170.84 579.075 187.654C579.075 204.467 583.731 218.306 593.043 229.17C602.614 239.775 615.547 245.078 631.843 245.078ZM528.896 240.807C523.205 241.842 516.092 242.359 507.556 242.359C498.244 242.359 491.518 240.16 487.38 235.763C483.241 231.107 481.172 221.536 481.172 207.051V132.555H522.688V97.247H481.172V42.539H438.88V97.247H408.228V132.555H438.88V216.751C438.88 230.978 440.82 242.747 444.7 252.059C448.58 261.371 454.012 267.967 460.996 271.847C467.98 275.468 474.058 277.796 479.232 278.831C484.405 279.866 490.484 280.383 497.468 280.383C509.625 280.383 520.101 279.607 528.896 278.055V240.807ZM286.862 282.714C258.668 282.714 236.811 273.79 221.29 255.942C205.77 238.094 198.01 215.331 198.01 187.654C198.01 160.235 206.158 137.602 222.454 119.754C238.751 101.647 260.608 92.594 288.026 92.594C300.184 92.594 311.306 95.18 321.395 100.354C331.483 105.527 339.242 112.64 344.674 121.694V97.25H386.966V278.058H344.674V253.614C339.501 262.408 331.353 269.522 320.23 274.954C309.367 280.127 298.244 282.714 286.862 282.714ZM293.07 245.078C310.401 245.078 323.593 239.646 332.647 228.782C341.958 217.918 346.615 204.208 346.615 187.654C346.615 171.099 341.958 157.39 332.647 146.526C323.593 135.662 310.401 130.23 293.07 130.23C276.775 130.23 263.841 135.662 254.271 146.526C244.959 157.131 240.303 170.84 240.303 187.654C240.303 204.467 244.959 218.306 254.271 229.17C263.841 239.775 276.775 245.078 293.07 245.078ZM30.704 256.718C47 274.048 68.986 282.714 96.664 282.714C121.496 282.714 141.413 276.635 156.416 264.478C171.677 252.32 180.342 236.024 182.412 215.59H140.12C135.205 235.248 120.72 245.078 96.664 245.078C81.661 245.078 69.892 240.163 61.356 230.334C53.078 220.246 48.94 206.019 48.94 187.654C48.94 169.288 53.078 155.191 61.356 145.362C69.892 135.274 81.661 130.23 96.664 130.23C120.978 130.23 135.464 140.706 140.12 161.658H182.412C180.342 140.706 171.677 124.022 156.416 111.606C141.413 98.931 121.496 92.594 96.664 92.594C68.986 92.594 47 101.388 30.704 118.978C14.666 136.308 6.648 159.2 6.648 187.654C6.648 216.107 14.666 239.128 30.704 256.718Z" fill="black"/>
   </svg>
@@ -793,9 +793,9 @@ const footerSocialClass =
   'w-11 h-11 lg:w-9 lg:h-9 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 transition-colors';
 
 const Footer = () => (
-  <footer className="mt-auto w-full bg-white border-t border-gray-200/70">
+  <footer className="mt-auto w-full overflow-hidden bg-white border-t border-gray-200/70">
     {/* Same centered column as <main>: 768px on desktop, 16px gutters below lg */}
-    <div className="mx-auto w-full max-w-[66rem] lg:max-w-[50rem] px-4 pt-10 lg:pt-12">
+    <div className="mx-auto w-full max-w-[66rem] lg:max-w-[60rem] px-4 pt-10 lg:pt-12">
       <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
         {/* Logo + social */}
         <div className="flex items-center justify-between lg:flex-col lg:items-start lg:gap-5">
@@ -860,10 +860,11 @@ const Footer = () => (
         </nav>
       </div>
 
-      {/* Wordmark signature: spans the column width, full word visible */}
-      <div className="select-none pointer-events-none pt-10 pb-6">
-        <FooterLogo />
-      </div>
+    </div>
+
+    {/* Wordmark signature: full footer width, cropped so it sinks half into the bottom edge */}
+    <div className="mx-auto w-full max-w-[90rem] px-4 sm:px-6 pt-10 lg:pt-12 select-none pointer-events-none">
+      <FooterLogo />
     </div>
   </footer>
 );
@@ -926,7 +927,7 @@ function TermsPage() {
   return (
     <div className="catalysis-app-surface min-h-screen font-sans text-gray-900 flex flex-col">
       <Navbar />
-      <main className="mx-auto w-full max-w-[66rem] lg:max-w-[50rem] px-4 flex-1 pb-20">
+      <main className="mx-auto w-full max-w-[66rem] lg:max-w-[60rem] px-4 flex-1 pb-20">
         <Link
           to="/"
           className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-600 transition-colors mb-6 font-sans"
@@ -1018,7 +1019,7 @@ function Home() {
     <div className="catalysis-app-surface min-h-screen font-sans text-gray-900 flex flex-col">
       <Navbar />
 
-      <main className="mx-auto w-full max-w-[66rem] lg:max-w-[50rem] px-4 flex-1 pb-20">
+      <main className="mx-auto w-full max-w-[66rem] lg:max-w-[60rem] px-4 flex-1 pb-20">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 rounded-lg overflow-hidden shadow-lg shadow-blue-500/20 shrink-0 ring-1 ring-black/5">
             <img
